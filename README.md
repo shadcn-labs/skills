@@ -4,6 +4,8 @@
 
 Agent skills for [Shadcn Labs](https://shadcnlabs.com). Install with the [skills CLI](https://github.com/vercel-labs/skills).
 
+[![launch-shadcn-registry](https://shieldcn.dev/skills/installs/shadcn-labs/skills/launch-shadcn-registry.svg?variant=branded&size=xs&theme=zinc&label=launch-shadcn-registry)](https://skills.sh/shadcn-labs/skills/launch-shadcn-registry)
+
 </div>
 
 ## Install
@@ -14,7 +16,7 @@ npx skills add shadcn-labs/skills
 
 ## Skill Overview
 
-<h3>launch-shadcn-registry · <a href="https://skills.sh/shadcn-labs/skills/launch-shadcn-registry"><img src="https://shieldcn.dev/skills/installs/shadcn-labs/skills/launch-shadcn-registry.svg?variant=branded&size=xs&theme=zinc" alt="launch-shadcn-registry" style="vertical-align: middle;" /></a></h3>
+### launch-shadcn-registry
 
 Launch and promote a custom shadcn/ui registry — directory PRs, community listings, and social drafts.
 
