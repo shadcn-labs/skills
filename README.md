@@ -24,14 +24,6 @@ Launch and promote a custom shadcn/ui registry — directory PRs, community list
 npx skills add shadcn-labs/skills/launch-shadcn-registry
 ```
 
-### mjml-react
-
-Build and render transactional/marketing emails with `@faire/mjml-react` and the [emailcn](https://emailcn.dev) registry — themes, UI sections, blocks, and HTML rendering.
-
-```bash
-npx skills add shadcn-labs/skills/mjml-react
-```
-
 ## License
 
 Published under the [MIT license](LICENSE).
