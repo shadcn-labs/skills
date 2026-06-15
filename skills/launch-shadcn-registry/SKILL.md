@@ -38,6 +38,9 @@ Required profile fields:
 | `categories` | Tags for shadcntemplates / awesome lists |
 | `installExample` | e.g. `npx shadcn@latest add @scope/component-name` |
 | `logo` | Inline SVG string for official directory (optional but recommended) |
+| `registryIndexPath` | Path to registry index relative to `registryBaseUrl`, defaults to `/registry.json` (optional) |
+| `sampleComponents` | Array of component slugs to validate during preflight, e.g. `["og-image"]` (optional) |
+| `features` | Bullet points for shadcntemplates and social posts (optional) |
 
 ## Workflow Overview
 
