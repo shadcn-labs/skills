@@ -21,7 +21,7 @@ npx skills add shadcn-labs/skills
 Launch and promote a custom shadcn/ui registry — directory PRs, community listings, and social drafts.
 
 ```bash
-npx skills add shadcn-labs/skills/launch-shadcn-registry
+npx skills add https://github.com/shadcn-labs/skills --skill launch-shadcn-registry
 ```
 
 ## License
