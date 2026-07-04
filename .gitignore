@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Node
+node_modules/
+
+# Skill build output
+dist/
+
+# Skill-creator eval/scratch workspaces
+.skill-workspaces/
+*-workspace/

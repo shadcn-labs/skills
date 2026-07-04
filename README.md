@@ -5,6 +5,7 @@
 Agent skills for [Shadcn Labs](https://shadcnlabs.com). Install with the [skills CLI](https://github.com/vercel-labs/skills).
 
 [![launch-shadcn-registry](https://shieldcn.dev/skills/installs/shadcn-labs/skills/launch-shadcn-registry.svg?variant=branded&size=xs&label=launch-shadcn-registry)](https://skills.sh/shadcn-labs/skills/launch-shadcn-registry)
+[![mastra-file-agents](https://shieldcn.dev/skills/installs/shadcn-labs/skills/mastra-file-agents.svg?variant=branded&size=xs&label=mastra-file-agents)](https://skills.sh/shadcn-labs/skills/mastra-file-agents)
 
 </div>
 
@@ -22,6 +23,14 @@ Launch and promote a custom shadcn/ui registry — directory PRs, community list
 
 ```bash
 npx skills add https://github.com/shadcn-labs/skills --skill launch-shadcn-registry
+```
+
+### mastra-file-agents
+
+Migrate Mastra code-based agents (`new Agent(...)` in a `Mastra({ agents })` map) to the file-based convention — one directory per agent under `src/mastra/agents/`.
+
+```bash
+npx skills add https://github.com/shadcn-labs/skills --skill mastra-file-agents
 ```
 
 ## License

@@ -2,12 +2,11 @@
 name: launch-shadcn-registry
 description: >-
   Launch and promote a custom shadcn/ui registry end-to-end: validate registry.json,
-  prepare the official shadcn-ui/ui directory PR, community directory PRs (registry.directory,
-  shadcntemplates, birobirobiro/awesome-shadcn-ui, bytefer/awesome-shadcn-ui), and draft
-  social posts for Reddit r/shadcn, X, Dev.to, and Hacker News. Use whenever the user says
-  "launch my registry", "list on shadcn directory", "submit to awesome-shadcn-ui",
-  "announce my shadcn registry", "registry.directory PR", or wants to promote a new
-  @scope registry — even if they do not say "launch-shadcn-registry" explicitly.
+  open the official shadcn-ui/ui and community directory PRs, and draft platform-specific
+  social posts (Reddit, X, Dev.to, Hacker News). Use whenever the user wants to launch,
+  list, or announce a shadcn/ui registry, submit to awesome-shadcn-ui or registry.directory,
+  or promote a new @scope registry — even if they do not say "launch-shadcn-registry"
+  explicitly.
 compatibility: Requires network access, curl, gh (GitHub CLI), and git. User must be authenticated with gh for PR creation.
 ---
 
@@ -165,25 +164,11 @@ After PRs are open or merged:
 
 ## Rules
 
-- Never submit to directories before preflight passes
-- Never claim listings are live until PRs are merged
-- Never auto-post to Reddit, X, Dev.to, or HN — drafts only
-- Keep official `directory.json` entry at the **end** of the array (append only)
-- One registry profile drives all artifacts — do not invent different descriptions per platform without user approval
-- For premium registries on shadcntemplates, note the one-free / $100 multi-premium policy; do not promise approval
+Guardrails not already implied by the phases above:
 
-## Example
-
-**User:** "Launch @ogimagecn — https://ogimagecn.vercel.app"
-
-**Agent:**
-
-1. Build profile from site + `curl https://ogimagecn.vercel.app/r/registry.json`
-2. Run `validate-registry.sh https://ogimagecn.vercel.app og-image`
-3. Generate JSON for official directory, registry.directory, shadcntemplates markdown, awesome list rows
-4. Ask: "Open PRs to all 5 repos?"
-5. On approval, create PRs via `gh`
-6. Deliver Reddit, X, Dev.to, and HN drafts
+- Keep the official `directory.json` entry at the **end** of the array (append only).
+- One registry profile drives all artifacts — do not invent different descriptions per platform without user approval.
+- For premium registries on shadcntemplates, note the one-free / $100 multi-premium policy; do not promise approval.
 
 ## Additional Resources
 
