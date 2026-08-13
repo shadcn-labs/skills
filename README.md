@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./.github/assets/gh.png" alt="Shadcn Labs Skills banner" />
+  <img src="./assets/gh.png" alt="Shadcn Labs Skills banner" />
 </p>
 
 <h1 align="center">Skills</h1>
