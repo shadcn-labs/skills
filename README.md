@@ -4,6 +4,9 @@
 
 Agent skills for [Shadcn Labs](https://shadcnlabs.com). Install with the [skills CLI](https://github.com/vercel-labs/skills).
 
+[![icon-set-audit](https://shieldcn.dev/skills/installs/shadcn-labs/skills/icon-set-audit.svg?variant=branded&size=xs&label=icon-set-audit)](https://skills.sh/shadcn-labs/skills/icon-set-audit)
+[![icon-set-extend](https://shieldcn.dev/skills/installs/shadcn-labs/skills/icon-set-extend.svg?variant=branded&size=xs&label=icon-set-extend)](https://skills.sh/shadcn-labs/skills/icon-set-extend)
+[![icon-set-generator](https://shieldcn.dev/skills/installs/shadcn-labs/skills/icon-set-generator.svg?variant=branded&size=xs&label=icon-set-generator)](https://skills.sh/shadcn-labs/skills/icon-set-generator)
 [![launch-shadcn-registry](https://shieldcn.dev/skills/installs/shadcn-labs/skills/launch-shadcn-registry.svg?variant=branded&size=xs&label=launch-shadcn-registry)](https://skills.sh/shadcn-labs/skills/launch-shadcn-registry)
 [![mastra-file-agents](https://shieldcn.dev/skills/installs/shadcn-labs/skills/mastra-file-agents.svg?variant=branded&size=xs&label=mastra-file-agents)](https://skills.sh/shadcn-labs/skills/mastra-file-agents)
 [![tailwind-to-stylex](https://shieldcn.dev/skills/installs/shadcn-labs/skills/tailwind-to-stylex.svg?variant=branded&size=xs&label=tailwind-to-stylex)](https://skills.sh/shadcn-labs/skills/tailwind-to-stylex)
@@ -17,6 +20,30 @@ npx skills add shadcn-labs/skills
 ```
 
 ## Skill Overview
+
+### icon-set-audit
+
+Audit an existing SVG icon set for consistency — spec drift, divergent recurring parts, near-duplicates, optical size outliers — and report what to fix in priority order.
+
+```bash
+npx skills add https://github.com/shadcn-labs/skills --skill icon-set-audit
+```
+
+### icon-set-extend
+
+Add icons to an existing set so they're indistinguishable from the originals — infers the spec and shared parts from the files, including for Lucide, Heroicons, Phosphor and friends.
+
+```bash
+npx skills add https://github.com/shadcn-labs/skills --skill icon-set-extend
+```
+
+### icon-set-generator
+
+Draw a custom SVG icon set that actually looks like a set — locked style spec, optical size envelopes, a reusable-parts registry, plus a validator and a preview page.
+
+```bash
+npx skills add https://github.com/shadcn-labs/skills --skill icon-set-generator
+```
 
 ### launch-shadcn-registry
 

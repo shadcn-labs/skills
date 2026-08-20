@@ -1,0 +1,56 @@
+{
+  "skill_name": "icon-set-generator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm building an analytics dashboard and I want our own icon set instead of Lucide — everyone's product looks the same. They mostly sit at 16px inside table rows and the sidebar nav. Maybe 14 icons: dashboard, chart, filter, sort, export, refresh, settings, user, search, calendar, alert, check, chevron, close. Tone is technical, we use Inter.",
+      "expected_output": "An icons/ directory with 14 .svg files on a 16 grid with 1.25 stroke (because they render at 16px), a style-spec.json recording the frozen spec, an elements.md registry, and a preview.html. validate_icons.py reports zero errors.",
+      "files": [],
+      "expectations": [
+        "Chooses the 16 grid with a 1.25 stroke width, citing the 16px render size rather than defaulting to the 24 grid",
+        "Every .svg has an identical viewBox and identical root stroke-width, stroke-linecap and stroke-linejoin",
+        "Every .svg uses currentColor only — no hex, rgb(), or named colour anywhere",
+        "No .svg carries an id or class attribute, or a transform on the root element",
+        "Writes icons/style-spec.json with the grid, stroke, cap, join, padding and minGap actually used",
+        "Writes an elements.md recording reusable parts (at minimum the arrowhead/chevron geometry) with concrete coordinates",
+        "chevron and close reuse the same 45-degree geometry rather than being drawn independently",
+        "Runs scripts/validate_icons.py against the output and it exits 0 with no errors",
+        "Runs scripts/build_preview.py and produces icons/preview.html",
+        "Presents the preview page as the deliverable rather than only listing filenames"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "hey — need icons for a dental clinic site I'm putting together for a client. friendly practice, families mostly, nothing corporate. no idea how many I need, that's kind of why I'm asking. renders around 28-32px, it's a fairly spacious layout",
+      "expected_output": "A proposed grouped icon inventory presented for approval before any drawing, a recommended preset (Soft, given the friendly brief) with the reason stated, then a 24-grid set once confirmed, validated and previewed.",
+      "files": [],
+      "expectations": [
+        "Proposes a grouped icon inventory (navigation / communication / trust / clinic-specific) and asks for sign-off before drawing",
+        "Suggests clinic-specific icons beyond generic ones (e.g. tooth, appointment, clipboard, first-aid) rather than only nav and contact icons",
+        "Recommends a preset with a one-line justification tied to the friendly, family brief",
+        "Chooses the 24 grid, matching the stated 28-32px render size",
+        "Does not force tall or wide objects into a square bounding box — at least one icon uses the vertical or horizontal envelope",
+        "Draws a small number of anchor icons first and checks them together before generating the whole set",
+        "Runs scripts/validate_icons.py and resolves every error it reports",
+        "Delivers style-spec.json, elements.md and preview.html alongside the .svg files"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We already agreed the style: 24px grid, 1.5 stroke, square caps, miter joins, zero corner radius — it needs to look precise, it's a trading platform. Draw me these 10: home, positions, orders, watchlist, alerts, wallet, transfer, history, docs, logout. Also I need filled versions of the first five because they're the sidebar nav and the active item is filled.",
+      "expected_output": "10 outline icons on the Sharp spec plus 5 filled variants whose silhouettes match their outline counterparts exactly, using fill=currentColor with fill-rule=evenodd for knockouts.",
+      "files": [],
+      "expectations": [
+        "Uses the exact spec given (24 grid, 1.5 stroke, square caps, miter joins, zero corner radius) without substituting a preset default",
+        "Filled variants share the same silhouette as their outline counterpart rather than being redrawn",
+        "Filled variants use fill=currentColor with fill-rule=evenodd for interior knockouts",
+        "Does not fake a knockout by stacking a white-filled shape on top",
+        "Draws filled variants slightly smaller within the envelope so toggling does not appear to change size",
+        "Accounts for square caps extending past the coordinate when checking the padding zone",
+        "Filled and outline files are named so the pair is obvious (e.g. home.svg and home-filled.svg)",
+        "Runs scripts/validate_icons.py and it exits 0",
+        "wallet or transfer is drawn on the horizontal envelope rather than squared off"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "skill_name": "icon-set-extend",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We use Lucide throughout the app but there's no icon for the three things our product actually does — I need 'batch-run', 'data-lineage' and 'rollback-snapshot'. They need to sit in the sidebar next to the Lucide ones and not look bolted on. Icons live in src/icons/ where we've vendored the Lucide SVGs we use.",
+      "expected_output": "Three new SVGs on Lucide's exact conventions (24 grid, stroke-width 2, round caps and joins, currentColor, root-level attributes), reusing shapes already present in the vendored set, validated against the combined directory.",
+      "files": [],
+      "expectations": [
+        "Runs scripts/infer_spec.py against the existing directory before drawing anything",
+        "Matches Lucide's conventions exactly: 24 viewBox, stroke-width 2, round linecap and linejoin, currentColor, attributes on the root svg",
+        "Reads the existing neighbouring icons rather than drawing from the concept alone",
+        "Reuses a recurring shape from the extracted registry (arrowhead, container, or similar) verbatim rather than redrawing it",
+        "Keeps interior detail sparse, accounting for the heavy 2px stroke on a 24 grid",
+        "Runs scripts/validate_icons.py over the combined directory, not only the new files",
+        "Does not attempt to fix pre-existing issues in the vendored Lucide files",
+        "Reports which conventions were matched and any ambiguity that was resolved by guessing"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need to add about 5 icons to our in-house set. Fair warning, it's a bit of a mess — it was built by two different people and I think they disagreed about some things. Set is at design/icons/. New ones I need: export-csv, archive, restore, merge, split.",
+      "expected_output": "An inference pass that surfaces the internal inconsistency, an explicit decision about which variant to match (checked with the user where genuinely ambiguous), then five icons drawn to that decision and validated.",
+      "files": [],
+      "expectations": [
+        "Surfaces the set's internal disagreement from infer_spec.py output rather than silently taking the majority",
+        "Asks the user which variant to match, or checks which icons are newest, when the split is close",
+        "Distinguishes quirks to match from defects not to reproduce, and says which is which",
+        "Draws all five icons, not a subset",
+        "Reuses extracted registry parts where the set already has them",
+        "Validates the new icons against the whole combined set",
+        "Applies the stranger test — reviews the full set as a grid to check the new icons don't stand out",
+        "Does not fix the pre-existing inconsistency across the old icons as part of this task"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "can you draw me a 'workflow' icon that matches the rest of our icons? they're phosphor icons, regular weight, in public/icons/",
+      "expected_output": "Recognition that Phosphor regular is a filled outline on a 256 viewBox with no stroke-width attribute, a heads-up to the user that this is harder than extending a stroked set, and one icon drawn as a closed filled path at the correct weight.",
+      "files": [],
+      "expectations": [
+        "Identifies that Phosphor uses a 256 viewBox rather than 24",
+        "Recognises that Phosphor regular weight is drawn as filled paths, not strokes, so there is no stroke-width to set",
+        "Tells the user this is more involved than extending a stroked set before drawing",
+        "Produces the icon with fill=currentColor and no stroke attributes",
+        "Draws the outline weight at a thickness consistent with Phosphor regular on the 256 grid",
+        "Reads existing Phosphor files in the directory to match construction rather than working from the published convention alone"
+      ]
+    }
+  ]
+}
