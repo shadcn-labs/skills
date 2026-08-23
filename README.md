@@ -1,6 +1,10 @@
-<div align="center">
+<p align="center">
+  <img src="./assets/gh.png" alt="Shadcn Labs Skills banner" />
+</p>
 
-# Shadcn Labs Skills
+<h1 align="center">Skills</h1>
+
+<div align="center">
 
 Agent skills for [Shadcn Labs](https://shadcnlabs.com). Install with the [skills CLI](https://github.com/vercel-labs/skills).
 
