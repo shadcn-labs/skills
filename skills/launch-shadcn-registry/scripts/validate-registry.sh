@@ -69,7 +69,7 @@ else:
   if [[ "$ITEM_COUNT" -gt 0 ]]; then
     ok "registry index lists $ITEM_COUNT item(s)"
   else
-    warn "registry index has no items/components array — may still be valid"
+    warn "registry index has no items/components array; it may still be valid"
   fi
 fi
 
@@ -89,7 +89,7 @@ if [[ -n "$COMPONENT" ]]; then
     fail "component $COMPONENT.json returned HTTP $COMP_CODE at $COMPONENT_URL"
   fi
 else
-  warn "no sample component provided — pass a component name as second argument"
+  warn "no sample component provided; pass a component name as the second argument"
 fi
 
 # Check homepage (derive from base if /r path)
@@ -107,7 +107,7 @@ echo "---"
 echo "Results: $PASS passed, $WARN warnings, $FAIL failed"
 
 if [[ "$FAIL" -gt 0 ]]; then
-  echo "Preflight FAILED — fix blockers before submitting to directories."
+  echo "Preflight FAILED. Fix blockers before submitting to directories."
   exit 1
 fi
 

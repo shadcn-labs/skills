@@ -5,8 +5,8 @@
   "registryBaseUrl": "https://ogimagecn.vercel.app/r",
   "registryIndexPath": "/registry.json",
   "componentUrlPattern": "https://ogimagecn.vercel.app/r/{name}.json",
-  "description": "Beautiful OG images, made simple. Ready to use, customizable Open Graph image components for React.",
-  "descriptionLong": "OG Image CN is a shadcn-compatible registry of Open Graph image components for React. Install via the CLI, customize templates in your codebase, and ship social preview images without a separate design tool.",
+  "description": "Customizable Open Graph image components for React, installed through the shadcn CLI.",
+  "descriptionLong": "OG Image CN is a shadcn-compatible registry of Open Graph image components for React. The CLI copies each template into your codebase so you can change its layout, content, and metadata without a separate design tool.",
   "githubUrl": "https://github.com/Aniket-508/ogimagecn",
   "githubUsername": "Aniket-508",
   "distribution": "open-source",
@@ -20,7 +20,7 @@
   "installExample": "npx shadcn@latest add @ogimagecn/simple",
   "sampleComponents": ["simple"],
   "features": [
-    "shadcn CLI install — components live in your repo",
+    "The shadcn CLI copies components into your repository",
     "Customizable OG image templates",
     "Built for React and Next.js metadata APIs"
   ]

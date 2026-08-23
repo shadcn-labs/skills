@@ -1,8 +1,8 @@
-# Official shadcn-ui/ui Directory
+# Official shadcn-ui/ui directory
 
-**Repo:** https://github.com/shadcn-ui/ui  
-**File:** `apps/v4/registry/directory.json`  
-**Example PR:** https://github.com/shadcn-ui/ui/pull/10896
+- Repository: https://github.com/shadcn-ui/ui
+- File: `apps/v4/registry/directory.json`
+- Example pull request: https://github.com/shadcn-ui/ui/pull/10896
 
 ## Entry format
 
@@ -22,30 +22,30 @@ Append a new object at the **end** of the JSON array:
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| `name` | Yes | Scoped name with `@` prefix, e.g. `@ogimagecn` |
+| `name` | Yes | Scoped name with an `@` prefix, such as `@ogimagecn` |
 | `homepage` | Yes | Public docs or marketing site |
 | `url` | Yes | Component JSON pattern; must use `{name}` placeholder |
-| `description` | Yes | Single sentence, ≤ ~160 characters |
+| `description` | Yes | Single sentence of about 160 characters or fewer |
 | `logo` | Recommended | Inline SVG string; see existing entries for style |
 
 Do not reorder or edit existing entries. Append only.
 
 ## PR details
 
-**Branch:** `feat/<scope-without-at>-directory`  
-**Title:** `feat(registry): add @scope`  
-**Commit:** `feat(registry): add @scope`
+- Branch: `feat/<scope-without-at>-directory`
+- Title: `feat(registry): add @scope`
+- Commit: `feat(registry): add @scope`
 
-**Body template:**
+Use this body:
 
 ```markdown
 ## Summary
 
 Adds `@scope` to the community registry directory.
 
-- **Registry URL**: `https://example.com/r/{name}.json`
-- **Homepage**: https://example.com
-- **Description**: <description>
+- Registry URL: `https://example.com/r/{name}.json`
+- Homepage: https://example.com
+- Description: <description>
 
 ## Test plan
 
@@ -55,10 +55,10 @@ Adds `@scope` to the community registry directory.
 
 ## Review expectations
 
-- Maintainer approval required (typically @shadcn)
-- PR is small — one JSON object
+- A shadcn/ui maintainer must approve the pull request
+- The change should contain one new JSON object
 - Vercel deploy preview may require team authorization on first contribution
-- Response time varies; follow up politely after 3–5 business days
+- Response time varies; follow up politely after three to five business days
 
 ## Mapping from registry profile
 
@@ -67,5 +67,5 @@ name        ← profile.scope
 homepage    ← profile.homepage
 url         ← profile.componentUrlPattern
 description ← profile.description
-logo        ← profile.logo (if present)
+logo        ← profile.logo when present
 ```

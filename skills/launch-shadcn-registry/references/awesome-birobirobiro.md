@@ -1,32 +1,34 @@
 # birobirobiro/awesome-shadcn-ui
 
-**Repo:** https://github.com/birobirobiro/awesome-shadcn-ui  
-**File:** `README.md`  
-**Site:** https://awesome-shadcn-ui.vercel.app (has submission form alternative)
+- Repository: https://github.com/birobirobiro/awesome-shadcn-ui
+- File: `README.md`
+- Site: https://awesome-shadcn-ui.vercel.app
+
+The site also has a submission form.
 
 ## Section selection
 
-For registries, add to the **Registries** section table (not Libs and Components).
+Add registries to the **Registries** table, not **Libs and Components**.
 
-If the resource is broader than a registry, use **Libs and Components** or **Tools** — confirm with user.
+If the resource is broader than a registry, confirm whether **Libs and Components** or **Tools** fits better.
 
 ## Row format
 
 ```markdown
-| scope-slug | <descriptionLong — one sentence, factual> | [Link](<homepage>) | <ISO-8601 UTC timestamp> |
+| scope-slug | <one factual sentence from descriptionLong> | [Link](<homepage>) | <ISO-8601 UTC timestamp> |
 ```
 
 ### Example
 
 ```markdown
-| ogimagecn | Beautiful OG images, made simple. Ready to use, customizable Open Graph image components for React. | [Link](https://ogimagecn.vercel.app) | 2026-06-16T12:00:00.000Z |
+| ogimagecn | Customizable Open Graph image components installed through the shadcn CLI. | [Link](https://ogimagecn.vercel.app) | 2026-06-16T12:00:00.000Z |
 ```
 
 ### Field rules
 
 | Column | Source |
 |--------|--------|
-| Name | Lowercase slug without `@` (e.g. `ogimagecn`) |
+| Name | Lowercase slug without `@`, such as `ogimagecn` |
 | Description | `profile.descriptionLong` or `profile.description` |
 | Link | `profile.homepage` |
 | Date | Current UTC time in `YYYY-MM-DDTHH:mm:ss.000Z` format |
@@ -35,13 +37,13 @@ Insert the row in **alphabetical order** within the Registries table if the tabl
 
 ## PR details
 
-**Title:** `docs: add <name> to Registries`  
-**Body:**
+- Title: `docs: add <name> to Registries`
+- Body:
 
 ```markdown
 ## Summary
 
-Adds <name> (<homepage>) to the Registries section.
+Adds <name> at <homepage> to the Registries section.
 
 ## Checklist
 
@@ -52,4 +54,4 @@ Adds <name> (<homepage>) to the Registries section.
 
 ## Alternative: website submission
 
-User can submit via https://awesome-shadcn-ui.vercel.app/ instead of a PR. Prefer PR when the user wants a traceable launch workflow.
+The user can submit through https://awesome-shadcn-ui.vercel.app/ instead of opening a pull request. Prefer a pull request when they want a visible review trail.

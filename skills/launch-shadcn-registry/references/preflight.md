@@ -1,4 +1,4 @@
-# Preflight Validation
+# Preflight validation
 
 Run these checks before generating directory PRs or social drafts.
 
@@ -11,7 +11,7 @@ The registry must be publicly accessible with no authentication:
 | Registry index | `{registryBaseUrl}/registry.json` | `https://ogimagecn.vercel.app/r/registry.json` |
 | Component files | `{componentUrlPattern}` with real component name | `https://ogimagecn.vercel.app/r/og-image.json` |
 
-Custom `registry_url` paths are allowed (e.g. registry.directory entries can set `registry_url` explicitly) but the index must resolve without auth.
+Custom `registry_url` paths are allowed. For example, registry.directory entries can set `registry_url` explicitly. The index must still resolve without authentication.
 
 ## Automated validation
 
@@ -22,7 +22,7 @@ bash scripts/validate-registry.sh <registryBaseUrl> [component-name]
 The script checks:
 
 1. `registry.json` returns HTTP 200 and valid JSON
-2. Registry index contains at least one item (or documents components)
+2. Registry index contains at least one item or documents its components
 3. Optional sample component JSON returns 200
 4. Response is not HTML error page
 
@@ -52,25 +52,25 @@ Also search community lists if the registry was previously submitted under a dif
 Official directory descriptions should be:
 
 - One sentence, factual
-- No "best", "#1", "revolutionary", or heavy marketing language
+- No claims such as "best", "#1", or "revolutionary"
 - Explain what components the registry provides
 
-### Logo (official directory)
+### Logo for the official directory
 
 If including `logo` in the official entry:
 
-- Inline SVG only (as used in `apps/v4/registry/directory.json`)
-- Reasonable size (< 8KB)
+- Inline SVG only, matching `apps/v4/registry/directory.json`
+- Smaller than 8 KB where practical
 - Works in light and dark contexts if possible
 
 ### GitHub metadata
 
 For registry.directory, prefer including:
 
-- `github_url` — source or registry repo
-- `github_profile` — `https://github.com/{username}.png`
+- `github_url` for the source or registry repository
+- `github_profile` set to `https://github.com/{username}.png`
 
-## Blockers (do not proceed)
+## Blockers
 
 - `registry.json` missing or returns non-JSON
 - All sampled component URLs 404
@@ -78,9 +78,9 @@ For registry.directory, prefer including:
 - Site homepage down
 - Registry requires auth headers or cookies
 
-## Warnings (proceed with user acknowledgment)
+## Warnings
 
-- No `logo` for official entry (still submittable)
-- Only one component in registry (fine for niche registries)
-- Premium distribution on shadcntemplates (review process, fees for multiple premium listings)
+- No `logo` for the official entry; the entry can still be submitted
+- Only one component in the registry; this may be intentional for a narrow registry
+- Premium distribution on shadcntemplates; review and fees may apply to additional premium listings
 - Official PR may take days for maintainer review

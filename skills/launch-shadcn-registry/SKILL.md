@@ -1,47 +1,45 @@
 ---
 name: launch-shadcn-registry
 description: >-
-  Launch and promote a custom shadcn/ui registry end-to-end: validate registry.json,
-  open the official shadcn-ui/ui and community directory PRs, and draft platform-specific
-  social posts (Reddit, X, Dev.to, Hacker News). Use whenever the user wants to launch,
-  list, or announce a shadcn/ui registry, submit to awesome-shadcn-ui or registry.directory,
-  or promote a new @scope registry — even if they do not say "launch-shadcn-registry"
-  explicitly.
-compatibility: Requires network access, curl, gh (GitHub CLI), and git. User must be authenticated with gh for PR creation.
+  Launch and promote a custom shadcn/ui registry. Validate registry.json, prepare or open
+  directory pull requests, and draft posts for Reddit, X, Dev.to, and Hacker News. Use when
+  the user wants to launch, list, submit, or announce a shadcn/ui registry, including requests
+  about awesome-shadcn-ui, registry.directory, or a new @scope registry.
+compatibility: Needs network access, curl, gh, and git. The user must be logged in through gh before creating pull requests.
 ---
 
-# Launch shadcn Registry
+# Launch a shadcn registry
 
-Orchestrate listing and announcing a custom shadcn/ui registry across official and community directories, then draft platform-specific social posts.
+Prepare directory submissions for a custom shadcn/ui registry, then write posts that fit each platform.
 
-## Before You Start
+## Before you start
 
-Confirm the user wants a **full launch** or a **subset** (e.g. official directory only, or social drafts only). Default to the full workflow unless they narrow scope.
+Confirm whether the user wants the full launch or only selected targets. Default to the full workflow unless they narrow the scope.
 
-Collect or infer a **registry profile**. If missing fields, ask before generating artifacts. Use [templates/registry-profile.example.json](templates/registry-profile.example.json) as the shape; validate against [templates/registry-profile.schema.json](templates/registry-profile.schema.json).
+Collect or infer a registry profile. Ask for missing required fields before generating submissions. Use [templates/registry-profile.example.json](templates/registry-profile.example.json) as the shape and validate it against [templates/registry-profile.schema.json](templates/registry-profile.schema.json).
 
 Required profile fields:
 
 | Field | Purpose |
 |-------|---------|
-| `scope` | Registry scope, e.g. `@ogimagecn` |
+| `scope` | Registry scope such as `@ogimagecn` |
 | `name` | Display name |
-| `homepage` | Marketing/docs URL |
-| `registryBaseUrl` | Base URL for JSON files (no trailing slash) |
-| `componentUrlPattern` | URL pattern with `{name}` placeholder, e.g. `https://example.com/r/{name}.json` |
-| `description` | One sentence (≤160 chars) for directories |
-| `descriptionLong` | 2–3 sentences for awesome lists and social |
+| `homepage` | Public project or documentation URL |
+| `registryBaseUrl` | Base URL for JSON files with no trailing slash |
+| `componentUrlPattern` | URL pattern with a `{name}` placeholder, such as `https://example.com/r/{name}.json` |
+| `description` | One directory sentence of no more than 160 characters |
+| `descriptionLong` | Two or three sentences for awesome lists and social posts |
 | `githubUrl` | Source repo |
 | `githubUsername` | For avatar URLs and filenames |
 | `distribution` | `open-source` or `premium` |
-| `categories` | Tags for shadcntemplates / awesome lists |
-| `installExample` | e.g. `npx shadcn@latest add @scope/component-name` |
-| `logo` | Inline SVG string for official directory (optional but recommended) |
-| `registryIndexPath` | Path to registry index relative to `registryBaseUrl`, defaults to `/registry.json` (optional) |
-| `sampleComponents` | Array of component slugs to validate during preflight, e.g. `["og-image"]` (optional) |
-| `features` | Bullet points for shadcntemplates and social posts (optional) |
+| `categories` | Tags for shadcntemplates and awesome lists |
+| `installExample` | Full install command such as `npx shadcn@latest add @scope/component-name` |
+| `logo` | Optional inline SVG string; recommended for the official directory |
+| `registryIndexPath` | Optional registry index path relative to `registryBaseUrl`; defaults to `/registry.json` |
+| `sampleComponents` | Optional component slugs to validate during preflight, such as `["og-image"]` |
+| `features` | Optional points for shadcntemplates and social posts |
 
-## Workflow Overview
+## Workflow
 
 Copy this checklist and track progress:
 
@@ -49,12 +47,12 @@ Copy this checklist and track progress:
 Launch Progress:
 - [ ] Phase 1: Preflight validation
 - [ ] Phase 2: Generate directory artifacts
-- [ ] Phase 3: Open GitHub PRs (user approval per PR)
+- [ ] Phase 3: Open GitHub pull requests after user approval
 - [ ] Phase 4: Draft social posts
 - [ ] Phase 5: Post-launch follow-up
 ```
 
-## Phase 1: Preflight
+## Phase 1: preflight
 
 Read [references/preflight.md](references/preflight.md) and run validation before generating any PRs.
 
@@ -75,9 +73,9 @@ Fetch the official directory to check duplicates:
 curl -fsSL https://raw.githubusercontent.com/shadcn-ui/ui/main/apps/v4/registry/directory.json | grep -i "<scope>"
 ```
 
-## Phase 2: Generate Artifacts
+## Phase 2: generate artifacts
 
-From the registry profile, generate all submission files. Read the relevant reference **only for targets the user wants**:
+Generate the requested submission files from the registry profile. Read only the references for those targets.
 
 | Target | Reference | Output |
 |--------|-----------|--------|
@@ -90,16 +88,16 @@ From the registry profile, generate all submission files. Read the relevant refe
 Present artifacts grouped by repo. Include:
 
 1. Exact file path to create or edit
-2. Full content to add (not diffs alone)
+2. Full content to add rather than a partial diff
 3. Suggested PR title and body
 
 ### PR title convention
 
-Use `feat(registry): add <scope>` for official shadcn-ui/ui (matches [PR #10896](https://github.com/shadcn-ui/ui/pull/10896)). Use `docs: add <name> to <section>` for awesome lists and `feat: add <name> registry` for registry.directory.
+Use `feat(registry): add <scope>` for official shadcn-ui/ui. This matches [PR #10896](https://github.com/shadcn-ui/ui/pull/10896). Use `docs: add <name> to <section>` for awesome lists and `feat: add <name> registry` for registry.directory.
 
-## Phase 3: Open GitHub PRs
+## Phase 3: open GitHub pull requests
 
-Use `gh` for all GitHub operations. **Ask the user before creating each PR** unless they explicitly asked to open all PRs.
+Use `gh` for GitHub operations. Ask before creating each pull request unless the user already asked to open all of them.
 
 Standard fork-and-PR flow per repo:
 
@@ -110,7 +108,7 @@ git clone https://github.com/<user>/ui.git /tmp/ui-registry-pr
 cd /tmp/ui-registry-pr
 git remote add upstream https://github.com/shadcn-ui/ui.git
 git fetch upstream && git checkout -b feat/<scope>-directory upstream/main
-# edit apps/v4/registry/directory.json — append entry at end of array
+# append the entry to apps/v4/registry/directory.json
 git add apps/v4/registry/directory.json
 git commit -m "feat(registry): add <scope>"
 git push -u origin HEAD
@@ -118,9 +116,9 @@ gh pr create --repo shadcn-ui/ui --title "feat(registry): add <scope>" --body "$
 ## Summary
 Adds <scope> to the community registry directory.
 
-- **Registry URL**: `<componentUrlPattern>`
-- **Homepage**: <homepage>
-- **Description**: <description>
+- Registry URL: `<componentUrlPattern>`
+- Homepage: <homepage>
+- Description: <description>
 
 ## Test plan
 - [ ] `curl <registryBaseUrl>/registry.json` returns valid JSON
@@ -129,18 +127,18 @@ EOF
 )"
 ```
 
-**Recommended PR order:**
+Open pull requests in this order unless the user chooses otherwise:
 
-1. Official `shadcn-ui/ui` (highest leverage; may take maintainer review)
+1. Official `shadcn-ui/ui`, the most visible listing and the one most likely to need maintainer review
 2. `rbadillap/registry.directory`
 3. `shadcnblocks/shadcntemplates`
-4. `birobirobiro/awesome-shadcn-ui` and `bytefer/awesome-shadcn-ui` (can be parallel)
+4. `birobirobiro/awesome-shadcn-ui` and `bytefer/awesome-shadcn-ui`, which can run in parallel
 
-Track PR URLs in the launch checklist. Do not draft social posts as "published" until the registry is live and at least one directory listing is merged or submitted.
+Track pull request URLs in the launch checklist. Do not describe the registry as published until it is live and at least one directory submission is open or merged.
 
-## Phase 4: Social Drafts
+## Phase 4: draft social posts
 
-Read platform references and produce **ready-to-paste drafts** (user posts manually):
+Read the platform references and produce ready-to-paste drafts. The user posts them manually.
 
 | Platform | Reference |
 |----------|-----------|
@@ -151,26 +149,26 @@ Read platform references and produce **ready-to-paste drafts** (user posts manua
 
 Tailor each draft from the registry profile. Include the install command, homepage, and GitHub link. Avoid hype; lead with the concrete problem the registry solves.
 
-**Timing:** Draft social posts after preflight passes. Suggest posting after the official directory PR is merged (or at minimum after `registry.json` is live).
+Draft social posts after preflight passes. Suggest publishing them after the official directory pull request merges. At minimum, wait until `registry.json` is live.
 
-## Phase 5: Post-Launch
+## Phase 5: follow up
 
 After PRs are open or merged:
 
-1. Share PR links with the user in a summary table (repo, PR URL, status)
-2. Remind user to respond to review comments within 48h
-3. After official merge, suggest updating social drafts to mention "now listed in the shadcn registry directory"
-4. If a PR is rejected, read maintainer feedback and adjust description or registry format — do not resubmit unchanged
+1. Share the repository, pull request URL, and status for every submission
+2. Remind the user to respond to review comments within 48 hours
+3. After the official merge, update social drafts to mention that the registry is now listed in the shadcn registry directory
+4. If a pull request is rejected, read the maintainer feedback and revise the description or registry format before resubmitting
 
 ## Rules
 
 Guardrails not already implied by the phases above:
 
-- Keep the official `directory.json` entry at the **end** of the array (append only).
-- One registry profile drives all artifacts — do not invent different descriptions per platform without user approval.
-- For premium registries on shadcntemplates, note the one-free / $100 multi-premium policy; do not promise approval.
+- Append the official `directory.json` entry to the end of the array.
+- Use one registry profile for every submission. Do not invent conflicting descriptions without user approval.
+- For premium registries on shadcntemplates, explain that the first listing is free and additional listings cost $100. Do not promise approval.
 
-## Additional Resources
+## Additional resources
 
 - Registry profile schema: [templates/registry-profile.schema.json](templates/registry-profile.schema.json)
 - Example profile: [templates/registry-profile.example.json](templates/registry-profile.example.json)

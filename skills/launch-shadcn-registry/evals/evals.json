@@ -3,20 +3,20 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "I just published my shadcn registry at https://motionkit.dev/r — it has 3 animation component presets. I want to get listed everywhere: official shadcn directory, registry.directory, the awesome lists, shadcntemplates. Also need social posts ready. Can you handle the full launch?",
-      "expected_output": "Agent collects registry profile, runs validate-registry.sh, generates artifacts for all 5 targets, presents them for approval, and drafts social posts for Reddit/X/Dev.to/HN.",
+      "prompt": "I just published my shadcn registry at https://motionkit.dev/r. It has three animation component presets. I want to get listed in the official shadcn directory, registry.directory, the awesome lists, and shadcntemplates. I also need social posts. Can you handle the full launch?",
+      "expected_output": "Collects the registry profile, runs validate-registry.sh, prepares submissions for all five targets, presents each pull request for approval, and drafts separate posts for Reddit, X, Dev.to, and Hacker News.",
       "files": []
     },
     {
       "id": 2,
-      "prompt": "Hey, my scope is @chartblocks — https://chartblocks.io. I just want to get listed on the official shadcn-ui/ui directory and registry.directory. Don't need the awesome lists or social stuff right now. What do I need to prepare?",
-      "expected_output": "Agent asks for confirmation of scope subset, collects profile fields, runs preflight validation, generates JSON entries for official directory and registry.directory only, presents artifacts with PR body templates.",
+      "prompt": "Hey, my scope is @chartblocks and the site is https://chartblocks.io. I only want the official shadcn-ui/ui directory and registry.directory. I don't need the awesome lists or social posts. What do I need to prepare?",
+      "expected_output": "Confirms the two requested targets, collects the required profile fields, runs preflight validation, and prepares only the official directory and registry.directory entries with pull request bodies.",
       "files": []
     },
     {
       "id": 3,
-      "prompt": "My registry @iconhive got merged into the shadcn official directory last week. Now I want to draft social posts to announce it — Reddit r/shadcn, X, Dev.to, and Hacker News. Registry is at https://iconhive.dev/r.",
-      "expected_output": "Agent skips preflight and PR generation (registry already live), collects profile, reads social reference files, produces ready-to-paste drafts for all 4 platforms tailored to the registry's details. Mentions 'now listed in the shadcn registry directory' in drafts.",
+      "prompt": "My registry @iconhive merged into the official shadcn directory last week. Now I want announcement drafts for Reddit r/shadcn, X, Dev.to, and Hacker News. The registry is at https://iconhive.dev/r.",
+      "expected_output": "Skips directory submission work because the registry is already live, collects the missing profile details, reads the social references, and writes a distinct draft for each of the four platforms. The drafts mention that the registry is now listed in the shadcn registry directory.",
       "files": []
     }
   ]

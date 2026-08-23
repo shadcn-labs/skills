@@ -1,7 +1,8 @@
-# Reddit — r/shadcn
+# Reddit r/shadcn
 
-**Subreddit:** https://www.reddit.com/r/shadcn/  
-**Posting:** Manual only. Draft for the user to paste.
+Subreddit: https://www.reddit.com/r/shadcn/
+
+The user posts manually. Prepare text they can paste.
 
 ## Tone
 
@@ -15,7 +16,7 @@
 Pick one:
 
 ```
-Showcase: {scope} — {one-line value from description}
+Showcase: {scope}, {one-line value from description}
 ```
 
 ```
@@ -29,28 +30,28 @@ New shadcn registry: {scope} for {specific use case}
 ## Body template
 
 ```markdown
-Hey r/shadcn — I put together a registry for {specific use case}.
+I built a registry for {specific use case}.
 
-**{name}** ({homepage}) is a shadcn-compatible registry with {brief component summary}.
+{name} at {homepage} is a shadcn-compatible registry with {brief component summary}.
 
-**Install:**
+Install:
 \`\`\`bash
 {installExample}
 \`\`\`
 
-**Links:**
+Links:
 - Site: {homepage}
 - GitHub: {githubUrl}
 - Registry: {registryBaseUrl}/registry.json
 
-{Optional: 1–2 sentences on motivation or what's included}
+{Optional motivation or a concrete note about what is included}
 
-Would love feedback on component API, docs, or what to add next.
+I'm looking for feedback on {one specific API choice, doc page, or missing component}.
 ```
 
 ## Tips
 
 - Add a screenshot or demo GIF in comments if the post allows
 - Do not post bare links without context
-- Flair: use Showcase or Resource if available
-- If account is new/low karma, engage in the subreddit before posting
+- Use the Showcase or Resource flair when available
+- If the account is new or has little karma, take part in existing discussions before posting

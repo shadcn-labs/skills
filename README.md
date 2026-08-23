@@ -16,11 +16,11 @@ Agent skills for [Shadcn Labs](https://shadcnlabs.com). Install with the [skills
 npx skills add shadcn-labs/skills
 ```
 
-## Skill Overview
+## Skill overview
 
 ### launch-shadcn-registry
 
-Launch and promote a custom shadcn/ui registry — directory PRs, community listings, and social drafts.
+Validate and launch a custom shadcn/ui registry through directory pull requests, community listings, and platform-specific post drafts.
 
 ```bash
 npx skills add https://github.com/shadcn-labs/skills --skill launch-shadcn-registry
@@ -30,7 +30,7 @@ npx skills add https://github.com/shadcn-labs/skills --skill launch-shadcn-regis
 
 ### mastra-file-agents
 
-Migrate Mastra code-based agents (`new Agent(...)` in a `Mastra({ agents })` map) to the file-based convention — one directory per agent under `src/mastra/agents/`.
+Migrate Mastra agents from a `Mastra({ agents })` map to one directory per agent under `src/mastra/agents/`.
 
 ```bash
 npx skills add https://github.com/shadcn-labs/skills --skill mastra-file-agents
@@ -40,7 +40,7 @@ npx skills add https://github.com/shadcn-labs/skills --skill mastra-file-agents
 
 ### tailwind-to-stylex
 
-Migrate TailwindCSS utility classes to StyleX — resolve classes to CSS, reshape into `stylex.create`, and apply with `stylex.props` / `stylex.attrs` across React and other StyleX-supported frameworks.
+Migrate TailwindCSS utilities to StyleX by resolving each class to CSS, reshaping it with `stylex.create`, and applying it through `stylex.props` or `stylex.attrs`.
 
 ```bash
 npx skills add https://github.com/shadcn-labs/skills --skill tailwind-to-stylex

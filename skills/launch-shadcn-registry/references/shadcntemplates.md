@@ -1,15 +1,15 @@
 # shadcntemplates
 
-**Repo:** https://github.com/shadcnblocks/shadcntemplates  
-**Directory:** `content/`  
-**Site:** https://shadcntemplates.com
+- Repository: https://github.com/shadcnblocks/shadcntemplates
+- Directory: `content/`
+- Site: https://shadcntemplates.com
 
 ## File naming
 
-Create: `content/{author}-{templatename}.md`
+Create `content/{author}-{templatename}.md`.
 
-- `author` ← `profile.githubUsername` (lowercase, no spaces)
-- `templatename` ← short slug from `profile.name` (lowercase, hyphens)
+- Set `author` to a lowercase, space-free version of `profile.githubUsername`.
+- Set `templatename` to a lowercase, hyphenated slug from `profile.name`.
 
 Example: `aniket-508-ogimagecn.md`
 
@@ -41,14 +41,14 @@ category:
 
 ## Features
 
-- **shadcn CLI** – Install with `npx shadcn@latest add @scope/component`
-- **Copy-paste** – Components live in your codebase
-- **<Feature 3>** – <specific value prop>
+- Install with `npx shadcn@latest add @scope/component`
+- Components are copied into the project
+- <Feature name>: <specific value>
 ```
 
 ## Premium listing
 
-Only if `profile.distribution` is `premium`:
+Use this only when `profile.distribution` is `premium`:
 
 ```markdown
 ---
@@ -68,12 +68,12 @@ category:
 ---
 ```
 
-**Policy:** One free premium listing per user. Multiple premium listings require a $100 fee (see repo README). All premium listings are reviewed before publishing.
+Each user gets one free premium listing. The repository README states that additional premium listings cost $100. Maintainers review every premium listing before publishing it.
 
 ## PR details
 
-**Title:** `docs: add <name> to shadcntemplates`  
-**Body:** Brief summary + links to homepage and GitHub.
+- Title: `docs: add <name> to shadcntemplates`
+- Body: A short summary with homepage and GitHub links.
 
 ## Category guidance
 

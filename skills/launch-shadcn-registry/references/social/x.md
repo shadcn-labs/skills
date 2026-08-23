@@ -1,11 +1,12 @@
-# X (Twitter)
+# X
 
-**Posting:** Manual only. Draft for the user to paste.
+The user posts manually. Prepare text they can paste.
 
 ## Single post template
 
 ```
-Launched {scope} — {description}
+I built {scope}.
+{description}
 
 Install: {installExample}
 
@@ -14,48 +15,46 @@ Install: {installExample}
 
 Keep under 280 characters. Drop the install line if too long; put it in a reply.
 
-## Thread template (recommended for registries)
+## Thread template
 
-**Post 1 (hook):**
+Post 1:
 ```
-Shipped {name} — a shadcn/ui registry for {specific use case}.
+I built {name}, a shadcn/ui registry for {specific use case}.
 
-Copy-paste components via the CLI. No npm lock-in.
-
-🧵
+The shadcn CLI copies each component into your project, where you can edit it.
 ```
 
-**Post 2 (what's inside):**
+Post 2:
 ```
 What's in the registry:
 
-• {component 1}
-• {component 2}
-• {component 3}
+- {component 1}
+- {component 2}
+- {component 3}
 
-Built with React + Tailwind + shadcn conventions.
+Each component includes {one concrete implementation detail}.
 ```
 
-**Post 3 (install + links):**
+Post 3:
 ```
 Install:
 
 {installExample}
 
-→ {homepage}
-→ {githubUrl}
+Docs: {homepage}
+Source: {githubUrl}
 
-Feedback welcome — what should I add next?
+If you try it, I'm looking for feedback on {specific API, component, or doc page}.
 ```
 
 ## Optional additions
 
-- Attach screenshot or 15–30s screen recording
-- Tag @shadcn only if the registry is merged into the official directory (don't preempt)
-- Hashtags sparingly: `#shadcn #react #tailwindcss` (max 2–3)
+- Attach a screenshot or a 15 to 30 second screen recording
+- Tag @shadcn only after the registry merges into the official directory
+- Use no more than two or three relevant hashtags
 
 ## Tone
 
 - Short sentences
 - Lead with the problem solved
-- No thread emoji spam beyond one 🧵 on post 1
+- Skip decorative emoji

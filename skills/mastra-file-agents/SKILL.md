@@ -1,39 +1,37 @@
 ---
 name: mastra-file-agents
 description: >-
-  Migrate Mastra code-based agents (agents built with new Agent(...) and registered
-  in a Mastra({ agents }) map) to the file-based convention: one directory per agent
-  under src/mastra/agents. Use when the user wants to convert or refactor Mastra
-  agents to the per-directory convention, mentions Mastra "file-based agents" or
-  agentConfig, or wants to split a big src/mastra/index.ts or agents.ts into one
-  folder per agent — even if they do not name this skill. Requires @mastra/core 1.48+.
-compatibility: A Mastra project using @mastra/core >= 1.48.0. Agents must run through the Mastra CLI (mastra dev / mastra build) for file-based discovery.
+  Migrate Mastra agents built with new Agent and registered in a Mastra agents map to
+  one directory per agent under src/mastra/agents. Use when the user asks for file-based
+  agents, agentConfig, a per-directory agent layout, or a split of src/mastra/index.ts
+  or agents.ts. Requires @mastra/core 1.48 or later.
+compatibility: A Mastra project using @mastra/core 1.48.0 or later. File discovery requires mastra dev or mastra build.
 ---
 
-# Migrate Mastra agents to file-based
+# Migrate Mastra agents to file-based directories
 
-Convert agents built in code with `new Agent({...})` and registered in a
-`new Mastra({ agents: {...} })` map into the file-based convention: one directory
-per agent under `src/mastra/agents/<name>/`, where sibling files supply what used to
-be constructor options.
+Convert agents built with `new Agent({...})` and registered in a
+`new Mastra({ agents: {...} })` map into one directory per agent under
+`src/mastra/agents/<name>/`. Sibling files replace the old constructor options.
 
-This is a **behavior-preserving refactor**, not a redesign. Move each option to the
-file that owns it, keep the same model, instructions, tools, memory, skills, and
-subagents, and don't invent config the agent didn't have.
+Preserve the agent's behavior. Move each option to the file that owns it, keep the
+same model, instructions, tools, memory, skills, and subagents, and do not invent
+config the agent did not have.
 
-## Two things that break migrations
+## Check discovery and collisions first
 
-**1. File-based agents are discovered ONLY by the Mastra bundler** (`mastra dev` /
-`mastra build`). If the app imports the `mastra` instance directly (Mastra used as a
-library, a custom server, tests that `import { mastra }`), `agents/<name>/`
-directories are never discovered and the agent silently disappears. Before migrating,
-confirm how the app runs: through the CLI → migrate freely; imported directly → **do
-not migrate that agent**, keep it in code and tell the user why.
+### Confirm the discovery path
 
-**2. Code wins on name collisions.** If an agent exists in both a `config.ts`
-directory and the `Mastra({ agents })` map, the code one is kept and the file-based
-one is ignored (with a warning). The migration is a **no-op until you remove the code
-registration** (Step 5). Half-migrating changes nothing.
+The Mastra bundler discovers file-based agents during `mastra dev` and `mastra build`.
+It does not discover them when an app imports the `mastra` instance directly, as a
+library, custom server, or test might do. Confirm how the app runs before migrating.
+Keep directly imported agents in code and explain why.
+
+### Remove code collisions
+
+Code registration wins when the same agent also exists in a file-based directory.
+Mastra logs a warning and ignores the directory. The migration does not take effect
+until Step 5 removes the agent from the `Mastra({ agents })` map.
 
 ## Workflow
 
@@ -41,42 +39,42 @@ Work one agent at a time. Copy this checklist and track it:
 
 ```
 Migration progress for <agent>:
-- [ ] Confirmed the app runs via mastra dev/build (not a direct import)
+- [ ] Confirmed the app runs through mastra dev or mastra build
 - [ ] Created src/mastra/agents/<name>/
-- [ ] config.ts (agentConfig) with model + non-instruction/tool config
-- [ ] instructions.md OR dynamic instructions kept in config.ts
-- [ ] tools/*.ts (one default export each, filename = tool key)
-- [ ] memory.ts / workspace.ts / skills/ / subagents/ if present (see references/mapping.md)
+- [ ] config.ts uses agentConfig and keeps the model plus remaining config
+- [ ] Static instructions moved to instructions.md, or dynamic instructions stayed in config.ts
+- [ ] Each tools/*.ts file has one default export and uses the tool key as its name
+- [ ] Moved memory, workspace, skills, and subagents when present
 - [ ] Removed the agent from the Mastra({ agents }) map
-- [ ] Deleted now-dead imports / the old agent file if nothing else uses it
+- [ ] Deleted dead imports and the old agent file when nothing else uses it
 - [ ] Verified with mastra dev
 ```
 
-### Step 1: Find the code-based agents
+### Step 1: find the code-based agents
 
-Locate every `new Agent({...})` and how it is registered. Usually the registration
-is in `src/mastra/index.ts` inside `new Mastra({ agents: { ... } })`, but agents
-may be defined in separate files (`src/mastra/agents/*.ts`, a big `agents.ts`) and
-imported. Read the full `Agent` config for each — you need every option to map it
-faithfully. Note the **key** used in the `agents` map — that key is how the agent is
-registered and looked up (e.g. `mastra.getAgent('weather')`, Studio, client SDK),
-and it becomes the directory name.
+Locate every `new Agent({...})` and how it is registered. Registration often lives
+in `src/mastra/index.ts` inside `new Mastra({ agents: { ... } })`, but agents
+may be defined in `src/mastra/agents/*.ts` files or a large `agents.ts` file and then
+imported. Read the full `Agent` config for each agent so every option has a destination.
+Record the key used in the `agents` map. That key controls registration and lookup in
+`mastra.getAgent('weather')`, Studio, and the client SDK. It also becomes the directory name.
 
-### Step 2: Create the directory and split the config
+### Step 2: create the directory and split the config
 
 For an agent registered as `agents: { weather: weatherAgent }`, create
 `src/mastra/agents/weather/`.
 
-**Name the directory after the map key, not the `id`.** The directory name becomes
+Name the directory after the map key, not the `id`. The directory name becomes
 the agent's registration/lookup key, so using the map key preserves every existing
 `getAgent(...)` call and client reference. This matters when the map key differs
-from the `id` — e.g. `agents: { browserAgent }` where `new Agent({ id: 'browser-agent' })`.
-Name the folder `browserAgent` (the key), and because `id`/`name` would otherwise
-default to `browserAgent`, set them **explicitly** in `config.ts` to keep the
-original `'browser-agent'` / `'Browser Agent'`. If the map key and `id` already
-match, `id`/`name` default to the folder and you can drop them.
+from the `id`. For `agents: { browserAgent }` with `new Agent({ id: 'browser-agent' })`,
+name the folder `browserAgent`. Set `id` and `name` explicitly in `config.ts` to keep
+the original `'browser-agent'` and `'Browser Agent'` values. If the map key and `id` already
+match, both values default to the folder name and you can drop them.
 
-**config.ts** — everything except instructions and tools that were passed inline.
+#### config.ts
+
+Move everything except inline instructions and tools into `config.ts`.
 Use `agentConfig()` so the partial is typed and sibling files fill the rest:
 
 ```typescript
@@ -84,27 +82,29 @@ import { agentConfig } from '@mastra/core/agent'
 
 export default agentConfig({
   model: 'openai/gpt-5.5',
-  // instructions omitted -> taken from instructions.md
-  // tools omitted -> taken from tools/*.ts
+  // instructions come from instructions.md
+  // tools come from tools/*.ts
 })
 ```
 
-`model` is required — a missing model fails the build and names the directory.
+`model` is required. A missing model fails the build and names the directory.
 
-**instructions.md** — if the original `instructions` was a **string** (or array of
-static strings/messages), move the text into `instructions.md` and omit
+#### instructions.md
+
+If the original `instructions` was a string or an array of static strings or messages,
+move the text into `instructions.md` and omit
 `instructions` from config.ts. `instructions.md` wins over a static `instructions`
 string, so leaving both is redundant.
 
-If the original `instructions` was a **function** (dynamic instructions that read
-runtime context), it CANNOT live in `instructions.md`. Keep it in `config.ts` —
+If the original `instructions` was a function that reads runtime context, it cannot
+live in `instructions.md`. Keep it in `config.ts` because
 dynamic function instructions win over `instructions.md`. See `references/mapping.md`.
 
-### Step 3: Split out the tools
+### Step 3: split out the tools
 
-Each tool becomes its own file under `tools/`, default-exporting the
-`createTool()` call. **The filename becomes the tool key**, so name the file after
-the key used in the original `tools` map (or the tool's `id`). If the original was
+Each tool gets its own file under `tools/` with a default export for the
+`createTool()` call. The filename becomes the tool key, so use
+the key from the original `tools` map or the tool's `id`. If the original was
 `tools: { get_weather: getWeatherTool }`, the file must be `tools/get_weather.ts`.
 
 ```typescript
@@ -120,15 +120,15 @@ export default createTool({
 ```
 
 Tools from `tools/*.ts` merge with any `config.tools`. On a key collision
-`config.tools` wins (with a warning), so don't list a tool in both places. If
-`config.tools` is a **function**, discovered tool files are ignored — in that case
-keep tools in config.ts and say so. Test files (`*.test.ts`, `*.spec.ts`, etc.)
+`config.tools` wins and Mastra logs a warning, so don't list a tool in both places. If
+`config.tools` is a function, Mastra ignores discovered tool files. In that case,
+keep tools in config.ts and say so. Test files such as `*.test.ts` and `*.spec.ts`
 are ignored by discovery.
 
-**Not every tool is a `createTool()`.** Provider-native tools (e.g.
-`openai.tools.webSearch({})`) and other pre-built tool objects don't fit the
+Not every tool is a `createTool()`. Provider-native tools such as
+`openai.tools.webSearch({})` and other pre-built tool objects don't fit the
 `createTool()` shape. Either leave them inline in `config.tools`, or default-export
-the tool object from a `tools/<key>.ts` file — both are discovered. When in doubt,
+the tool object from a `tools/<key>.ts` file. Mastra discovers either form. When in doubt,
 keeping a provider tool in `config.tools` is the simplest faithful move. Reserve
 `tools/*.ts` files for the project's own `createTool()` definitions.
 
@@ -136,27 +136,26 @@ If a tool is shared by multiple agents, don't force it into one agent's `tools/`
 Keep the shared tool in a common module and reference it from `config.tools`, or
 duplicate deliberately. Note the choice for the user.
 
-### Step 4: Handle the remaining surfaces
+### Step 4: handle the remaining configuration
 
 Memory, workspace, skills, and subagents each have their own file/directory and
 precedence rules. When the agent you're migrating uses any of them, read
-[references/mapping.md](references/mapping.md) for the exact mapping and gotchas
-(dynamic-config caveats, subagent `description` requirement, seed files, etc.).
-Do not drop these during migration — losing an agent's memory or subagent silently
+[references/mapping.md](references/mapping.md) for the exact mapping, including dynamic
+configuration, subagent descriptions, and seed files.
+Do not drop these during migration. Losing an agent's memory or subagent silently
 changes behavior.
 
-### Step 5: Remove the code registration
+### Step 5: remove the code registration
 
-This is what completes the migration (gotcha 2). Delete the agent's entry from the
+This completes the migration. Delete the agent's entry from the
 `Mastra({ agents: {...} })` map, then remove imports and definitions that are now
-unused — if the old `new Agent(...)` lived in its own file and nothing else imports
+unused. If the old `new Agent(...)` lived in its own file and nothing else imports
 it, delete that file.
 
-Leave code-registered any agent that must stay in code: direct-import/library usage,
-programmatic or dynamic registration, or a shared instance imported elsewhere. Both
-styles coexist fine.
+Keep an agent registered in code when the app imports it directly, registers it
+dynamically, or shares the instance elsewhere. Code and file-based agents can coexist.
 
-### Step 6: Verify
+### Step 6: verify
 
 Run the app through the CLI so the bundler discovers the new directories:
 
@@ -165,30 +164,30 @@ npx mastra dev
 ```
 
 `npx mastra build` is a good non-interactive check when you can't start the dev
-server — it runs the same discovery and fails loudly on missing models, missing
+server. It runs the same discovery and fails on missing models, missing
 subagent descriptions, or unresolved directories. If dependencies aren't installed
 in your environment, say so and mark verification as structural only rather than
 claiming it runs.
 
-Confirm each migrated agent still appears (under its original registration key) and
-responds, and that no "code agent overrides file-based" or "config.X wins" warnings
-are logged (those signal a leftover collision or a redundant config entry). Fix
+Confirm each migrated agent still appears under its original registration key and
+responds. Check that no "code agent overrides file-based" or "config.X wins" warnings
+appear. Those warnings signal a leftover collision or redundant config entry. Fix
 warnings before calling it done.
 
 ## Mapping cheat sheet
 
 | `new Agent({...})` option | File-based location |
 | --- | --- |
-| agents map key | Directory name (preserves registration/lookup key) |
-| `id` / `name` | Default to directory name; set explicitly in `config.ts` when they differ from the folder |
-| `model` | `config.ts` (required) |
-| `instructions` (string/array) | `instructions.md` |
-| `instructions` (function) | keep in `config.ts` |
-| `description` | `config.ts` (required for subagents) |
-| `tools: { key: createTool(...) }` | `tools/<key>.ts` (default export) |
-| provider/pre-built tools (e.g. `openai.tools.*`) | keep in `config.tools`, or default-export from `tools/<key>.ts` |
-| `skills` | `skills/` (see references/mapping.md) |
-| `memory` | `memory.ts` (see references/mapping.md) |
+| agents map key | Directory name; preserves the registration and lookup key |
+| `id` / `name` | Default to directory name; set them in `config.ts` when they differ from the folder |
+| `model` | Required in `config.ts` |
+| static `instructions` | `instructions.md` |
+| instruction function | Keep in `config.ts` |
+| `description` | `config.ts`; required for subagents |
+| `tools: { key: createTool(...) }` | `tools/<key>.ts` as a default export |
+| provider or pre-built tools | Keep in `config.tools`, or default-export from `tools/<key>.ts` |
+| `skills` | `skills/`; see references/mapping.md |
+| `memory` | `memory.ts`; see references/mapping.md |
 | `workspace` | `workspace.ts` + `workspace/` seed files |
-| delegated agents (`agents`) | `subagents/<childId>/` |
+| delegated `agents` | `subagents/<childId>/` |
 | everything else | `config.ts` via `agentConfig()` |

@@ -1,25 +1,24 @@
-# Tailwind → StyleX mapping
+# Tailwind to StyleX mapping
 
-Read this whenever a class carries a modifier (`hover:`, `md:`, `dark:`, `group-*`…) or
-isn't a plain single-value utility. The guiding rule from `SKILL.md` still holds:
-**resolve the class to the CSS it produces, then reshape.** This file is about the
-*reshape* step — where Tailwind's variant goes in a StyleX object, and what to do with
-utilities that don't have a one-property home.
+Read this whenever a class carries a modifier such as `hover:`, `md:`, `dark:`, or
+`group-*`, or is not a plain single-value utility. Resolve the class to the CSS it
+produces, then reshape it. This file explains where a Tailwind variant goes in a StyleX
+object and what to do with utilities that don't have a one-property home.
 
 ## Contents
 
-- [Modifiers → conditions](#modifiers--conditions)
+- [Modifiers and conditions](#modifiers-and-conditions)
 - [Responsive breakpoints](#responsive-breakpoints)
 - [Dark mode](#dark-mode)
 - [Combining conditions](#combining-conditions)
-- [Arbitrary values & runtime values](#arbitrary-values--runtime-values)
+- [Arbitrary and runtime values](#arbitrary-and-runtime-values)
 - [Utilities that need restructuring](#utilities-that-need-restructuring)
-- [Pseudo-elements: before / after](#pseudo-elements-before--after)
-- [Animations & keyframes](#animations--keyframes)
+- [Pseudo-elements](#pseudo-elements)
+- [Animations and keyframes](#animations-and-keyframes)
 - [Gradients, shadows, transforms](#gradients-shadows-transforms)
-- [Accessibility & misc](#accessibility--misc)
+- [Accessibility and other utilities](#accessibility-and-other-utilities)
 
-## Modifiers → conditions
+## Modifiers and conditions
 
 Every Tailwind variant becomes a **key inside the property value object**, alongside a
 `default`. The value object repeats per property the variant touches.
@@ -39,10 +38,10 @@ Every Tailwind variant becomes a **key inside the property value object**, along
 | `odd:` | `':nth-child(odd)'` |
 | `even:` | `':nth-child(even)'` |
 | `empty:` | `':empty'` |
-| `aria-*` (e.g. `aria-expanded:`) | `'[aria-expanded="true"]'` (attribute selector as key) |
-| `data-*` (e.g. `data-[state=open]:`) | `'[data-state="open"]'` |
+| `aria-*`, such as `aria-expanded:` | `'[aria-expanded="true"]'` as an attribute-selector key |
+| `data-*`, such as `data-[state=open]:` | `'[data-state="open"]'` |
 | `dark:` | see [Dark mode](#dark-mode) |
-| `sm: md: lg: xl: 2xl:` | `@media` — see [Responsive](#responsive-breakpoints) |
+| `sm: md: lg: xl: 2xl:` | `@media`; see [Responsive breakpoints](#responsive-breakpoints) |
 
 ```tsx
 // hover:bg-blue-600 focus:bg-blue-700
@@ -55,8 +54,8 @@ backgroundColor: {
 
 ## Responsive breakpoints
 
-Tailwind is mobile-first: an unprefixed utility is the base, and `sm/md/lg` layer on at
-`min-width`. Mirror that — unprefixed → `default`, breakpoints → `@media (min-width: …)`.
+Tailwind is mobile-first. An unprefixed utility is the base, and `sm/md/lg` layer on at
+`min-width`. Map the unprefixed value to `default` and the breakpoints to `@media` keys.
 Default Tailwind breakpoints:
 
 | Prefix | Media query key |
@@ -84,13 +83,13 @@ width: {
 
 Which target you pick must match how the project runs dark mode:
 
-- **Media strategy** (`darkMode: 'media'`): map `dark:` →
+- With `darkMode: 'media'`, map `dark:` to
   `'@media (prefers-color-scheme: dark)'`, just another condition key.
-- **Class/selector strategy** (`darkMode: 'class'`, the common one — a `.dark` ancestor
-  toggles theme): StyleX can't target an ancestor class from a child's styles. The clean
-  equivalent is **themed variables**: define tokens with `stylex.defineVars`, make a dark
-  `stylex.createTheme`, and apply the theme class on the root. Colors then reference
-  `colors.text` and flip automatically. See `stylex-rules.md` → "Theming with variables".
+- With `darkMode: 'class'`, a `.dark` ancestor toggles the theme. StyleX can't target an
+  ancestor class from a child's styles. Use themed variables instead. Define tokens with
+  `stylex.defineVars`, create a dark theme with `stylex.createTheme`, and apply the theme
+  class on the root. Colors then reference
+  `colors.text` and change with the theme. See the theming section in `stylex-rules.md`.
   Flag this to the user, since it's a structural change, not a per-property swap.
 
 ```tsx
@@ -103,8 +102,8 @@ backgroundColor: {
 
 ## Combining conditions
 
-Stacked variants (`md:hover:...`, `dark:focus:...`) nest. **Each nested level needs its
-own `default`** — a missing inner default silently drops the style.
+Stacked variants such as `md:hover:...` and `dark:focus:...` nest. Each nested level
+needs its own `default`. A missing inner default silently drops the style.
 
 ```tsx
 // hover:bg-blue-600 md:hover:bg-blue-700
@@ -117,18 +116,18 @@ backgroundColor: {
 },
 ```
 
-## Arbitrary values & runtime values
+## Arbitrary and runtime values
 
-- **Static arbitrary value** — read it straight out of the class:
-  `top-[117px]` → `top: '117px'`, `bg-[#1da1f2]` → `backgroundColor: '#1da1f2'`,
-  `grid-cols-[1fr_500px]` → `gridTemplateColumns: '1fr 500px'`.
-- **Runtime value** (a JS expression drives the value, e.g. `w-[${size}px]` or an inline
-  `style={{ width }}`) — StyleX can't compute it at build time. Use a **dynamic style
-  function**: arguments must be plain identifiers and the body a single object literal.
+- Read a static arbitrary value directly from the class. For example, `top-[117px]` becomes
+  `top: '117px'`, `bg-[#1da1f2]` becomes `backgroundColor: '#1da1f2'`, and
+  `grid-cols-[1fr_500px]` becomes `gridTemplateColumns: '1fr 500px'`.
+- StyleX cannot compute a runtime value such as `w-[${size}px]` or `style={{ width }}`
+  at build time. Use a dynamic style function. Its arguments must be plain identifiers,
+  and its body must be one object literal.
 
 ```tsx
 const styles = stylex.create({
-  bar: (width: number) => ({ width }),   // number → px
+  bar: (width: number) => ({ width }),   // a number represents px
 })
 // ...
 <div {...stylex.props(styles.bar(width))} />
@@ -136,23 +135,23 @@ const styles = stylex.create({
 
 ## Utilities that need restructuring
 
-These Tailwind utilities compile to descendant / sibling / ancestor-state selectors.
+These Tailwind utilities compile to descendant, sibling, or ancestor-state selectors.
 StyleX styles one element, so there's no property to put them on. Restructure and tell
 the user.
 
 | Tailwind | Why it doesn't map | What to do instead |
 | --- | --- | --- |
-| `space-x-*` / `space-y-*` | emits `> * + * { margin… }` | Put `gap` on the flex/grid parent (`gap: '1rem'`). If the parent isn't flex/grid, add margins to the children's own styles. |
-| `divide-x-*` / `divide-y-*` | border on `> * + *` | Add a border to the child styles (e.g. `borderTopWidth` on each child after the first), or a separator element. |
-| `group` + `group-hover:` / `group-focus:` | styles a child based on ancestor state | Lift the state into React (`isHovered`) and pass a conditional style, or drive a `stylex.defineVars` variable set on the parent's `:hover` and read by the child. |
-| `peer` + `peer-*:` | styles based on a sibling's state | Same as `group`: React state or a shared CSS variable. |
-| `prose` (typography plugin) | styles a whole subtree of tags | No StyleX equivalent; keep the plugin for that subtree or style tags explicitly. Flag it. |
-| `@container` + `@sm:` etc. | container queries | StyleX **does** support `@container` as a condition key — set `containerType` on the parent and use `'@container (min-width: …)'` on children. Not un-convertible, just note it. |
+| `space-x-*` / `space-y-*` | emits sibling margins | Put a value such as `gap: '1rem'` on the flex or grid parent. If the parent is neither, add margins to the child styles. |
+| `divide-x-*` / `divide-y-*` | adds a border between children | Add a border such as `borderTopWidth` to each child after the first, or insert a separator element. |
+| `group` + `group-hover:` / `group-focus:` | styles a child based on ancestor state | Lift the state into React with a value such as `isHovered`, or set a `stylex.defineVars` variable on the parent's `:hover` and read it in the child. |
+| `peer` + `peer-*:` | styles based on a sibling's state | Use React state or a shared CSS variable. |
+| `prose` from the typography plugin | styles a whole subtree of tags | No StyleX equivalent; keep the plugin for that subtree or style tags explicitly. Flag it. |
+| `@container` with container breakpoints | container queries | StyleX supports `@container` as a condition key. Set `containerType` on the parent and use a condition such as `'@container (min-width: 640px)'` on children. |
 
-## Pseudo-elements: before / after
+## Pseudo-elements
 
-`before:` / `after:` become `'::before'` / `'::after'` condition keys. A generated
-pseudo-element needs `content` (Tailwind sets `content: ''` implicitly).
+`before:` and `after:` become `'::before'` and `'::after'` condition keys. A generated
+pseudo-element needs `content`; Tailwind sets `content: ''` implicitly.
 
 ```tsx
 // before:content-['*'] before:text-red-500
@@ -160,7 +159,7 @@ color: { default: null, '::before': '#ef4444' },
 content: { default: null, '::before': '"*"' },
 ```
 
-## Animations & keyframes
+## Animations and keyframes
 
 `animate-*` utilities reference keyframes. Define them with `stylex.keyframes` and
 reference the result in `animationName`.
@@ -175,24 +174,26 @@ const styles = stylex.create({
 })
 ```
 
-For Tailwind's built-in `animate-spin/ping/pulse/bounce`, recreate the keyframes it ships
-(spin is the example above). Split the shorthand `animation` into longhands.
+For Tailwind's built-in `animate-spin`, `animate-ping`, `animate-pulse`, and
+`animate-bounce`, recreate the keyframes Tailwind ships. The example above covers spin.
+Split the `animation` shorthand into longhands.
 
 ## Gradients, shadows, transforms
 
-- **Gradient** (`bg-gradient-to-r from-… to-…`) → resolve to the `background-image`
-  linear-gradient it produces: `backgroundImage: 'linear-gradient(to right, #…, #…)'`.
-- **Shadow** (`shadow-md`) → the literal `boxShadow` value from the Tailwind scale.
-- **Transforms** (`scale-95`, `rotate-3`, `-translate-x-2`) → Tailwind composes these via
+- Resolve a gradient such as `bg-gradient-to-r` with `from-*` and `to-*` to the
+  `background-image` it produces. For example, use
+  `backgroundImage: 'linear-gradient(to right, #111827, #f9fafb)'`.
+- Map `shadow-md` to the literal `boxShadow` value from the Tailwind scale.
+- Tailwind composes transforms such as `scale-95`, `rotate-3`, and `-translate-x-2` through
   CSS variables into one `transform`. In StyleX, combine them into a single `transform`
-  string (`transform: 'translateX(-0.5rem) rotate(3deg) scale(0.95)'`). Keep transition
+  string such as `transform: 'translateX(-0.5rem) rotate(3deg) scale(0.95)'`. Keep transition
   utilities as longhand `transitionProperty` / `transitionDuration` / `transitionTimingFunction`.
 
-## Accessibility & misc
+## Accessibility and other utilities
 
-- `sr-only` → expand to the known declaration block (position:absolute; width/height 1px;
-  padding 0; margin -1px; overflow hidden; clip; whiteSpace nowrap; borderWidth 0). Its
-  counterpart `not-sr-only` reverses it.
-- `container` → Tailwind's container is `width: 100%` plus `max-width` per breakpoint;
+- Expand `sr-only` to the known declaration block with absolute positioning, one-pixel
+  dimensions, zero padding, negative margin, hidden overflow, clipping, no wrapping, and
+  zero border width. Its counterpart `not-sr-only` reverses the block.
+- Tailwind's `container` is `width: 100%` plus `max-width` per breakpoint;
   reproduce with `maxWidth` conditions if used.
-- `line-clamp-*` → the `-webkit-box` / `-webkit-line-clamp` block Tailwind emits.
+- Map `line-clamp-*` to the `-webkit-box` and `-webkit-line-clamp` declarations Tailwind emits.

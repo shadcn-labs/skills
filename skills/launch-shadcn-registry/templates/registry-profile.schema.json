@@ -30,12 +30,12 @@
     "homepage": {
       "type": "string",
       "format": "uri",
-      "description": "Public docs or marketing site"
+      "description": "Public documentation or project site"
     },
     "registryBaseUrl": {
       "type": "string",
       "format": "uri",
-      "description": "Base URL for registry JSON (no trailing slash)"
+      "description": "Base URL for registry JSON with no trailing slash"
     },
     "registryIndexPath": {
       "type": "string",
@@ -53,7 +53,7 @@
     },
     "descriptionLong": {
       "type": "string",
-      "description": "2-3 sentences for awesome lists and social"
+      "description": "Two or three sentences for awesome lists and social posts"
     },
     "githubUrl": {
       "type": "string",
@@ -83,7 +83,7 @@
     "sampleComponents": {
       "type": "array",
       "items": { "type": "string" },
-      "description": "Component slugs to validate, e.g. og-image"
+      "description": "Component slugs to validate, such as og-image"
     },
     "features": {
       "type": "array",
