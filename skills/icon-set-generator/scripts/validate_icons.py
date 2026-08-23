@@ -6,9 +6,9 @@ Usage:
     python3 validate_icons.py icons/ --spec icons/style-spec.json
     python3 validate_icons.py icons/ --json
 
-Errors are things that are objectively wrong (mismatched stroke, hardcoded colour,
-glyph outside the padding zone). Warnings are "go look at this one" — most usefully
-the optical-size check, whose bounding boxes are geometric, not perceptual.
+Errors mark objective failures such as a mismatched stroke, fixed color, or glyph outside the
+padding zone. Warnings request visual inspection. The optical-size check uses geometric bounds,
+so it cannot replace a perceptual review.
 
 Standard library only. No network, no dependencies.
 """
@@ -231,7 +231,7 @@ def path_points(d):
 
 
 def shape_points(tag, a):
-    """Outline points for a primitive shape element."""
+    """Outline points for a basic shape element."""
     f = lambda k, d=0.0: float(a.get(k, d))
     if tag == "circle":
         cx, cy, r = f("cx"), f("cy"), f("r")
@@ -299,7 +299,7 @@ def load_icon(path):
 
 
 def coarse(points, target=140):
-    """Thin a point list for pairwise distance work — full density is wasted there."""
+    """Thin a point list for pairwise distance work. Full density is wasted there."""
     n = len(points)
     if n <= target:
         return points
@@ -365,30 +365,30 @@ def check_icon(icon, spec, grid, padding, min_gap):
             errs.append(f"root {key} is {got!r}, set uses {want!r}")
 
     if root.get("transform"):
-        errs.append("transform on root — bake positioning into the coordinates instead")
+        errs.append("transform on root. Bake positioning into the coordinates instead")
 
     for k in ("fill", "stroke", "color", "style"):
         v = (root.get(k) or "").lower()
         if v and (COLOR_RE.search(v) or v.split("(")[0].strip() in NAMED_COLORS):
-            errs.append(f"root {k}={root.get(k)!r} — use currentColor (or none) so the icon "
+            errs.append(f"root {k}={root.get(k)!r}. Use currentColor (or none) so the icon "
                         f"inherits colour")
 
     for tag, a in icon["elements"]:
         if tag in ("text", "tspan"):
-            errs.append(f"<{tag}> — text does not survive small render sizes")
+            errs.append(f"<{tag}>. Text does not survive small render sizes")
         if tag in ("image", "use"):
-            errs.append(f"<{tag}> — icons must be self-contained geometry")
+            errs.append(f"<{tag}>. Icons must be self-contained geometry")
         for k in ("id", "class"):
             if k in a:
-                errs.append(f"<{tag}> carries {k}={a[k]!r} — strip it so external CSS can style freely")
+                errs.append(f"<{tag}> carries {k}={a[k]!r}. Strip it so external CSS can style freely")
         for k, v in a.items():
             if k in ("fill", "stroke", "style", "color", "stop-color") and v:
                 low = v.lower()
                 if COLOR_RE.search(low) or low.split("(")[0].strip() in NAMED_COLORS:
-                    errs.append(f"<{tag}> {k}={v!r} — use currentColor (or none) so the icon inherits colour")
+                    errs.append(f"<{tag}> {k}={v!r}. Use currentColor (or none) so the icon inherits colour")
         sw = a.get("stroke-width")
         if sw is not None and spec.get("stroke-width") and abs(float(sw) - float(spec["stroke-width"])) > 1e-9:
-            warns.append(f"<{tag}> overrides stroke-width to {sw} — intentional optical thinning, "
+            warns.append(f"<{tag}> overrides stroke-width to {sw}. Intentional optical thinning, "
                          f"or drift? Comment it if deliberate")
 
     for tag, a in icon["elements"]:
@@ -399,7 +399,7 @@ def check_icon(icon, spec, grid, padding, min_gap):
             for m in NUM_RE.finditer(str(raw)):
                 frac = m.group().split(".")
                 if len(frac) == 2 and len(frac[1].rstrip("0")) > 2:
-                    errs.append(f"<{tag}> coordinate {m.group()} has more than 2 decimals — "
+                    errs.append(f"<{tag}> coordinate {m.group()} has more than 2 decimals: "
                                 f"round to whole or half units")
                     break
 
@@ -440,7 +440,7 @@ def gap_check(icon, min_gap):
                        default=None)
             if best is None or best < 0.5 or best >= min_gap:
                 continue
-            out.append(f"<{ta}> and <{tb}> are {best:.2f} apart, under the {min_gap} minimum — "
+            out.append(f"<{ta}> and <{tb}> are {best:.2f} apart, under the {min_gap} minimum: "
                        f"they will merge at small sizes; simplify rather than shrink the gap")
     return out
 
@@ -451,7 +451,7 @@ def is_round(points, bb):
 
     A corner test alone is not enough: sparse cross- and arrow-shaped forms leave the
     corners empty too, and get called circles. Sampling reach in sixteen directions and
-    comparing it against the bounding ellipse separates the three cases — a clock reaches
+    comparing it against the bounding ellipse separates the three cases. A clock reaches
     the ellipse in every direction and never passes it, an arrow falls short diagonally,
     and a rectangle overshoots at the corners.
     """
@@ -476,7 +476,7 @@ def optical_report(name, bb, points, grid):
 
     Round forms get the larger circle envelope, because a circle measuring the same as a
     square reads smaller. Roundness is detected by asking whether anything occupies the
-    corners of the bounding box — a circle leaves them empty, a rectangle does not.
+    corners of the bounding box. A circle leaves them empty, a rectangle does not.
     """
     scale = grid / 24.0
     w, h = bb[2] - bb[0], bb[3] - bb[1]
@@ -508,12 +508,13 @@ def centering_note(name, bb, grid):
 def main():
     ap = argparse.ArgumentParser(description="Validate an SVG icon set for consistency.")
     ap.add_argument("directory")
-    ap.add_argument("--spec", help="style-spec.json to validate against "
-                                   "(default: infer from the files themselves)")
+    ap.add_argument("--spec", help="style-spec.json to validate against. When omitted, load "
+                                   "<directory>/style-spec.json if present; otherwise infer "
+                                   "the specification from the SVG files")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     ap.add_argument("--focus", help="comma-separated icon names to report on. The spec and "
                                     "the optical median are still computed from every file, "
-                                    "so new icons are judged against the whole set — you "
+                                    "so new icons are judged against the whole set. You "
                                     "just do not get told about pre-existing noise in files "
                                     "that are not yours.")
     args = ap.parse_args()
@@ -559,7 +560,7 @@ def main():
                 opticals.append(rep)
             off = centering_note(icon["name"], bb, grid)
             if off:
-                warns.append(f"bounding box centre is {off:.2f} off the canvas centre — "
+                warns.append(f"bounding box centre is {off:.2f} off the canvas centre: "
                              f"deliberate optical centring, or a mistake?")
         results.append({"icon": icon["name"], "errors": errs, "warnings": warns})
 
@@ -571,12 +572,12 @@ def main():
                 lookup = next(x for x in results if x["icon"] == r["icon"])
                 lookup["warnings"].append(
                     f"fills only {r['fill']:.0%} of the {r['envelope']} envelope "
-                    f"({r['w']}x{r['h']}) vs {median:.0%} median — likely reads small")
+                    f"({r['w']}x{r['h']}) vs {median:.0%} median. Likely reads small")
             elif r["fill"] > 1.06:
                 lookup = next(x for x in results if x["icon"] == r["icon"])
                 lookup["warnings"].append(
                     f"overfills the {r['envelope']} envelope at {r['fill']:.0%} "
-                    f"({r['w']}x{r['h']}) — likely reads large")
+                    f"({r['w']}x{r['h']}). Likely reads large")
 
     if focus is not None:
         for r in results:
@@ -612,12 +613,12 @@ def main():
         print()
 
     if opticals:
-        print("Optical size (bounding box vs envelope) — sorted, outliers at the ends:")
+        print("Optical size (bounding box vs envelope). Sorted, outliers at the ends:")
         for r in sorted(opticals, key=lambda x: x["fill"]):
             print(f"  {r['fill']:6.0%}  {r['icon']:<24} {r['w']:>6.2f} x {r['h']:<6.2f} {r['envelope']}")
         print()
         print("  Curves are sampled, so these are close but not perceptual. Diagonal-dominant")
-        print("  icons (x, close, chevron, expand) legitimately measure small — check them in")
+        print("  icons (x, close, chevron, expand) legitimately measure small. Check them in")
         print("  the preview rather than inflating them to satisfy this table.")
         print()
 

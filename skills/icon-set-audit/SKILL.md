@@ -1,56 +1,40 @@
 ---
 name: icon-set-audit
 description: >-
-  Audit an existing SVG icon set for consistency and report what to fix, in priority order.
-  Use when the user says their icons "look off", "don't match", "feel inconsistent", or were
-  drawn by different people over time; when they want an icon set reviewed, QA'd, or checked
-  before shipping a design system; when they ask why their icons look amateur or homemade;
-  or when they name icon-set-audit. Also use before extending a set, to find out what you'd
-  be matching. Reports and optionally applies mechanical repairs — it does not redraw icons.
-compatibility: Any project with a directory of .svg files. Bundled script needs python3 (stdlib only) — no npm, no design tool, no network.
+  Audit an existing SVG icon set and prioritize inconsistencies by visibility and repair cost.
+  Use for a whole-set consistency review, an explanation of why a set feels uneven, or a split
+  between safe mechanical repairs and redraw work. Use icon-set-extend when the user wants
+  selected icons added or restyled.
+compatibility: Any project with a directory of .svg files. The bundled script needs only standard-library python3.
 ---
 
 # Audit an icon set
 
-A set can be forty individually fine icons and still be a bad set. That's the whole
-difficulty: the problems that make a set look homemade are **relational** — this arrowhead
-isn't quite the one used in the other six icons, this glyph is optically larger than its
-neighbours, these two files are the same drawing under different names. Open any single file
-and it looks correct. The defect only exists across files, which is why reviewing icons one at
-a time never finds it.
+An icon can look correct alone and still break the set. The useful defects are relational.
+One arrowhead differs from six others, one glyph carries more visual weight, or two files ship
+the same drawing under different names.
 
-So an audit has two halves. A script does the cross-set arithmetic no one can do by eye across
-forty files. Then you look at the contact sheet, because the script cannot see whether a gear
-and a slider both mean "settings", or whether half the set is drawn front-on and half in
-three-quarter perspective.
-
-## What an audit is for
-
-The output is a **triage document**, not a complaint list. The user has a set that exists and
-is already in use, so every finding has to answer two questions: how visible is this at the
-size it renders, and what does fixing it cost? "42 findings" tells them nothing. "Three things
-break at 16px, six you'd fix next time you touch those files, and one systemic problem worth
-half a day" tells them what to do on Monday.
-
-Resist the urge to report everything the script emits. A finding you wouldn't spend your own
-afternoon on is noise, and noise is what makes people ignore audits.
+The deliverable is a triage report. Rank findings by visibility at the actual render size and
+by repair cost. A short report with one clear first move is better than a complete linter dump.
 
 ## Workflow
 
-### Step 1: Establish what "correct" means here
+### Step 1: Set the standard
 
-You cannot audit against nothing. Two questions, and they change the whole report:
+Inspect the project before asking questions. Look for `style-spec.json`, design system notes,
+usage sites, and render-size tokens. Ask only for information the repository cannot answer.
 
-- **Is there an intended spec, or is the set's own majority the standard?** If a
-  `style-spec.json` or a design-system doc exists, pass it with `--spec`; deviations are then
-  real errors. Without one, the script infers the majority — and a "deviation" might be the
-  three newest icons being right while the older seventeen are wrong. Ask which it is.
-- **Where do these render, and at what size?** Density and gap findings matter enormously at
-  16px and barely at 32px. An audit that flags detail problems in icons that only ever appear
-  at 48px is wasting the user's time.
+Record these facts:
 
-Also worth asking: is anything in here off-limits? Third-party logos and brand marks have
-their own construction rules and shouldn't be audited against the set's spec.
+- The intended specification, or the set majority when no specification exists
+- The smallest common render size
+- Files that follow separate rules, such as brand marks or third-party logos
+
+When no written specification exists, the analyzer can infer the majority. Check recent git
+history before treating that majority as correct. A close split may mean the set is migrating.
+
+This step is complete when the standard, render size, and exclusions are known or stated as
+explicit assumptions.
 
 ### Step 2: Run the analyzer
 
@@ -58,48 +42,50 @@ their own construction rules and shouldn't be audited against the set's spec.
 python3 scripts/audit_icons.py path/to/icons/ --report audit.html
 ```
 
-Add `--spec path/to/style-spec.json` when there's an intended spec. `--json` gives you the
-same data structured, which is useful when the set is large enough that you want to sort and
-count rather than read.
+Pass the intended specification when one exists:
 
-What it computes that you can't:
+```bash
+python3 scripts/audit_icons.py path/to/icons/ \
+  --spec path/to/style-spec.json --report audit.html
+```
 
-- **Spec agreement** — which viewBox, stroke width, cap and join the set actually converges
-  on, and exactly which files disagree.
-- **Divergent recurring parts** — the important one. It rasterises every shape and compares
-  them under all eight rotations and mirrors, so it can tell you "these four icons share an
-  arrowhead exactly, and this fifth one redrew it." That finding is invisible file by file.
-- **Near-duplicate icons** — the same drawing shipped under two names. Compared without
-  rotation, because a left arrow is a legitimate mirror of a right arrow, not a duplicate.
-- Optical size distribution against the shape envelopes, gap-minimum violations, coordinate
-  hygiene, complexity outliers, naming collisions, and hardcoded colours.
+Use `--json` when structured output will make a large set easier to sort. The analyzer checks
+spec agreement, recurring parts, near duplicates, optical size, gaps, padding, coordinate
+hygiene, complexity, naming, and fixed colors.
 
-### Step 3: Look at the contact sheet
+This step is complete when the command succeeds and the HTML report exists.
 
-Open the report. The grid at the top is the actual deliverable; the tables underneath only
-explain what you can already see. Read `references/failure-modes.md` for the full taxonomy —
-it covers what each machine finding means in practice, plus everything the script is blind to.
-The blind spots, briefly:
+### Step 3: Inspect the contact sheet
 
-- **Concept collisions.** A gear named `settings` and sliders named `preferences`. Both fine
-  drawings; the set now says two things for one idea.
-- **Mixed metaphor, perspective, or detail level.** A front-on house next to a three-quarter
-  laptop. A camera with a lens barrel and aperture blades next to a three-stroke home.
-- **Mixed drawing modes.** Some icons outline, some solid, with no rule for which.
-- **Direction inconsistency.** Diagonals running both ways across the set.
-- **Coverage.** The most expensive finding is usually an icon that isn't there.
+Open the report and inspect every icon at the target size. Read
+`references/failure-modes.md` before classifying findings. It explains the machine results and
+the visual defects the script cannot detect.
 
-### Step 4: Triage
+Check these blind spots across the full sheet:
 
-Sort every finding into three buckets, and say which bucket each is in:
+- One concept represented by multiple icons, or one icon used for conflicting concepts
+- Mixed perspective, drawing mode, detail level, or diagonal direction
+- Missing icons required by the product surfaces in scope
 
-- **Breaks at render size** — clipped strokes, shapes merging into a smudge, an unreadable
-  glyph, hardcoded colours in a themed UI. Fix now.
-- **Worth fixing when you next touch that file** — spec deviations, naming, precision noise, a
-  slightly-off optical size. Cheap individually, invisible individually.
-- **Systemic** — divergent recurring parts, no agreed spec, mixed drawing modes. These cost
-  real time and pay back across every future icon. Usually there are only one or two, and
-  they're the reason the set feels off.
+This step is complete when every machine finding has been checked against the sheet and every
+icon has been considered for the visual blind spots.
+
+### Step 4: Triage every retained finding
+
+Place each retained finding in one bucket:
+
+- **Breaks at render size.** The icon clips, merges into a smudge, becomes unreadable, or fails
+  theming. Fix it now.
+- **Systemic.** The set has divergent shared parts, conflicting rules, or no agreed standard.
+  Estimate the set-wide repair cost.
+- **Worth fixing when touched.** The defect is real but not visible enough to justify immediate
+  work.
+
+Drop findings that are invisible, harmless, and unlikely to affect future work. Record what
+you considered and deliberately omitted.
+
+This step is complete when every analyzer result and visual observation is either placed in a
+bucket or recorded as deliberately omitted.
 
 ### Step 5: Write the report
 
@@ -107,51 +93,53 @@ Use this structure:
 
 ```markdown
 ## Verdict
-[One paragraph: is this set holding together or not, and what's the single thing to fix first.]
+[State whether the set holds together and name the first repair.]
 
 ## Breaks at render size
-[Finding — file(s) — why it's visible — fix]
+[Finding, files, visible effect, repair]
 
 ## Systemic
-[The one or two relational problems, with the icons involved and an estimate of the work]
+[Relational problem, affected icons, estimated work]
 
 ## Worth fixing when touched
-[Grouped, terse. A list, not paragraphs.]
+[Grouped list]
 
 ## Deliberately not flagged
-[What you saw and chose not to raise, so they know it was considered.]
+[Items inspected and omitted]
 ```
 
-That last section matters more than it looks. It's what separates an audit from a linter dump
-— it shows you exercised judgment rather than pasting output.
+Keep a healthy set's report short. The report is complete when it names one first repair and
+accounts for every retained or omitted finding from Step 4.
 
-### Step 6: Offer the mechanical repairs
+### Step 6: Apply approved mechanical repairs
+
+Run `--fix` only when the user requested repairs or approved the offer:
 
 ```bash
 python3 scripts/audit_icons.py path/to/icons/ --fix
 ```
 
-This applies only repairs whose intent is unambiguous: root attributes conformed to the spec,
-`id`/`class` stripped, coordinates rounded. It prints exactly what it changed per file.
+Repeat the `--spec path/to/style-spec.json` argument from Step 2 when that audit used one.
 
-Three things it deliberately won't touch, and you should say so:
+The command conforms unambiguous root attributes, strips `id` and `class`, and rounds noisy
+path, point, and shape coordinates. It prints each changed file. It leaves these decisions to
+a human:
 
-- **Hardcoded colours.** Swapping `#111111` for `currentColor` is usually right, but a brand
-  mark inside the set may be deliberately fixed-colour. Report it, let the user decide.
-- **Filenames.** Renaming breaks imports. That's their call, not yours.
-- **Anything perceptual.** Optical size, divergent parts, merged shapes, and mixed metaphors
-  all need redrawing. `--fix` never redraws, and neither does this skill — if the user wants
-  the icons themselves changed, that's `icon-set-extend` (to add matching icons) or a redraw
-  they should approve icon by icon.
+- Fixed colors, because brand artwork may require them
+- Filenames, because renaming can break imports
+- Perceptual changes, because optical size, merged shapes, and mixed metaphors need redrawing
 
-Run the audit again afterwards so the remaining list is the true one.
+Run the same audit command again after repairs. This step is complete when the second report
+shows the true remaining findings and the final summary separates repaired files from redraw
+work.
+
+Audit owns diagnosis and approved mechanical cleanup. `icon-set-extend` owns new icons and
+selected redraws that must match the existing set. Keep a selected redraw separate from a
+set-wide cleanup unless the user expands the scope.
 
 ## Reference files
 
-- `references/failure-modes.md` — the taxonomy: each way a set falls apart, how to recognise
-  it, how visible it is at render size, and what it costs to fix. Read it at Step 3, before
-  writing any findings.
-
-If `icon-set-generator` is installed alongside this skill, its `references/construction.md`
-explains the drawing rules these findings are measured against — useful when the user asks
-*why* something is a problem.
+- Read `references/failure-modes.md` during Step 3. It defines each failure, its visibility at
+  render size, and its likely repair cost.
+- When `icon-set-generator` is available, read its `references/construction.md` only when the
+  user asks for the geometric reason behind a finding.

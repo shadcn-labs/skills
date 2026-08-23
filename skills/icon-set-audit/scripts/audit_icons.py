@@ -240,7 +240,7 @@ def path_points(d):
 
 
 def shape_points(tag, a):
-    """Outline points for a primitive shape element."""
+    """Outline points for a basic shape element."""
     f = lambda k, d=0.0: float(a.get(k, d))
     if tag == "circle":
         cx, cy, r = f("cx"), f("cy"), f("r")
@@ -308,7 +308,7 @@ def load_icon(path):
 
 
 def coarse(points, target=140):
-    """Thin a point list for pairwise distance work — full density is wasted there."""
+    """Thin a point list for pairwise distance work. Full density is wasted there."""
     n = len(points)
     if n <= target:
         return points
@@ -390,7 +390,7 @@ def span(points):
 
 
 def comparable(pa, pb, tol=0.28, need_2d=True):
-    """Only compare parts of similar size — otherwise the overlap number is noise.
+    """Only compare parts of similar size. Otherwise the overlap number is noise.
 
     need_2d also throws out anything essentially one-dimensional. A bare line overlaps
     every other line in the set under some rotation, which is true and useless.
@@ -466,7 +466,7 @@ def find_divergent_parts(icons):
             continue
 
         # A part that drifted badly scores below NEAR_PART and would otherwise drop out
-        # of its own cluster — which is backwards, since heavy drift is the worst kind.
+        # of its own cluster. Which is backwards, since heavy drift is the worst kind.
         # Sweep once more at a looser threshold for parts this cluster probably owns.
         candidates = []
         for j in range(len(parts)):
@@ -584,19 +584,19 @@ def file_findings(icon, spec, grid, padding, min_gap):
 
     if root.get("transform"):
         add("worth-fixing", "hygiene",
-            "transform on root — bake positioning into the coordinates")
+            "transform on root. Bake positioning into the coordinates")
 
     for k in ("fill", "stroke", "color", "style"):
         v = (root.get(k) or "").lower()
         if v and (COLOR_RE.search(v) or v.split("(")[0].strip() in NAMED_COLORS):
             add("blocking", "colour",
-                f"root {k}={root.get(k)!r} — the icon cannot inherit colour")
+                f"root {k}={root.get(k)!r}. The icon cannot inherit colour")
 
     for tag, a in icon["elements"]:
         if tag in ("text", "tspan"):
-            add("blocking", "content", f"<{tag}> — text is unreadable at icon sizes")
+            add("blocking", "content", f"<{tag}>. Text is unreadable at icon sizes")
         if tag in ("image", "use"):
-            add("blocking", "content", f"<{tag}> — the icon is not self-contained")
+            add("blocking", "content", f"<{tag}>. The icon is not self-contained")
         for k in ("id", "class"):
             if k in a:
                 add("worth-fixing", "hygiene", f"<{tag}> carries {k}={a[k]!r}")
@@ -604,12 +604,12 @@ def file_findings(icon, spec, grid, padding, min_gap):
             if k in ("fill", "stroke", "style", "color", "stop-color") and v:
                 low = str(v).lower()
                 if COLOR_RE.search(low) or low.split("(")[0].strip() in NAMED_COLORS:
-                    add("blocking", "colour", f"<{tag}> {k}={v!r} — use currentColor")
+                    add("blocking", "colour", f"<{tag}> {k}={v!r}. Use currentColor")
         sw = a.get("stroke-width")
         if sw is not None and spec.get("stroke-width") and \
                 abs(float(sw) - float(spec["stroke-width"])) > 1e-9:
             add("look-at-it", "spec",
-                f"<{tag}> overrides stroke-width to {sw} — deliberate thinning, or drift?")
+                f"<{tag}> overrides stroke-width to {sw}. Deliberate thinning, or drift?")
 
     bb = bbox(icon["points"])
     if bb is None:
@@ -637,7 +637,7 @@ def file_findings(icon, spec, grid, padding, min_gap):
             if best is not None and 0.5 <= best < min_gap:
                 add("worth-fixing", "density",
                     f"<{ta} #{i + 1}> and <{tb} #{j + 1}> are {best:.2f} apart, under the "
-                    f"{min_gap} minimum — they merge at small sizes")
+                    f"{min_gap} minimum. They merge at small sizes")
 
     return out, bb
 
@@ -646,7 +646,7 @@ def file_findings(icon, spec, grid, padding, min_gap):
 
 
 def infer_spec(icons):
-    """Majority vote — the spec the set actually converges on, not the one it claims."""
+    """Majority vote. The spec the set actually converges on, not the one it claims."""
     spec = {}
     for key in ("viewBox",) + STYLE_ATTRS:
         vals = [i["root"].get(key) for i in icons if i["root"].get(key) is not None]
@@ -677,7 +677,7 @@ def is_round(points, bb):
 
     A corner test alone is not enough: sparse cross- and arrow-shaped forms leave the
     corners empty too, and get called circles. Sampling reach in sixteen directions and
-    comparing it against the bounding ellipse separates the three cases — a clock reaches
+    comparing it against the bounding ellipse separates the three cases. A clock reaches
     the ellipse in every direction and never passes it, an arrow falls short diagonally,
     and a rectangle overshoots at the corners.
     """
@@ -750,6 +750,20 @@ def round_numbers(text):
             changed[0] = True
         return f'{m.group(1)}="{new_body}"'
     out = re.sub(r'\b(d|points)="([^"]*)"', d_repl, text)
+
+    def attr_repl(m):
+        body = m.group(2)
+        new_body = NUM_RE.sub(repl, body)
+        if new_body != body:
+            changed[0] = True
+        return f'{m.group(1)}="{new_body}"'
+
+    geometry_attrs = "x|y|x1|y1|x2|y2|cx|cy|r|rx|ry|width|height"
+    out = re.sub(
+        rf'\b({geometry_attrs})="({NUM_RE.pattern})"',
+        attr_repl,
+        out,
+    )
     return out, changed[0]
 
 
@@ -873,7 +887,7 @@ def build_report(path, title, summary, findings, opticals, variants, dups, clust
     var_rows = []
     for key, groups in variants.items():
         for g in groups:
-            shown = ", ".join(g["icons"][:6]) + (" …" if len(g["icons"]) > 6 else "")
+            shown = ", ".join(g["icons"][:6]) + (" ..." if len(g["icons"]) > 6 else "")
             var_rows.append(f'<tr><td class="mono">{html.escape(key)}</td>'
                             f'<td class="mono">{html.escape(str(g["value"]))}</td>'
                             f'<td>{g["count"]}</td><td class="mono">{html.escape(shown)}</td></tr>')
@@ -896,7 +910,7 @@ def build_report(path, title, summary, findings, opticals, variants, dups, clust
 
     dup_html = "".join(
         f'<div class="f"><h3>{html.escape(a)}.svg &harr; {html.escape(b)}.svg</h3>'
-        f'<ul><li>{sc:.0%} identical geometry — almost certainly the same drawing under '
+        f'<ul><li>{sc:.0%} identical geometry. Almost certainly the same drawing under '
         f'two names. Keep one and alias the other.</li></ul></div>'
         for a, b, sc in dups) or '<p class="empty">No near-duplicate icons.</p>'
 
@@ -904,8 +918,8 @@ def build_report(path, title, summary, findings, opticals, variants, dups, clust
     for c in clusters:
         if not c["divergent"] and not c["candidates"]:
             cl_html.append(
-                f'<div class="f"><h3>&lt;{c["tag"]}&gt; ~{c["size"][0]}&times;{c["size"][1]} '
-                f'&mdash; reused verbatim in {len(c["members"])} icons</h3><ul><li>'
+                f'<div class="f"><h3>&lt;{c["tag"]}&gt; ~{c["size"][0]}&times;{c["size"][1]}. '
+                f'Reused verbatim in {len(c["members"])} icons</h3><ul><li>'
                 f'{html.escape(", ".join(c["members"]))}</li></ul></div>')
         else:
             bits = [f'<li>Reused verbatim in <b>{c["exact"]}</b> icons: '
@@ -919,11 +933,11 @@ def build_report(path, title, summary, findings, opticals, variants, dups, clust
                 bits.append(f'<li><span class="sev worth-fixing">Worth fixing</span>'
                             f'probably this part redrawn from scratch: {html.escape(cand)}</li>')
             bits.append('<li>Pick one version, put it in the element registry, and paste it '
-                        'into the rest. Nothing here looks wrong on its own &mdash; that is '
+                        'into the rest. Each file looks plausible alone. That is '
                         'exactly why it survived this long.</li>')
             cl_html.append(
-                f'<div class="f"><h3>&lt;{c["tag"]}&gt; ~{c["size"][0]}&times;{c["size"][1]} '
-                f'&mdash; anchored on {html.escape(c["anchor"])}</h3><ul>{"".join(bits)}</ul></div>')
+                f'<div class="f"><h3>&lt;{c["tag"]}&gt; ~{c["size"][0]}&times;{c["size"][1]}. '
+                f'Anchored on {html.escape(c["anchor"])}</h3><ul>{"".join(bits)}</ul></div>')
     cluster_html = "".join(cl_html) or \
         '<p class="empty">No recurring parts detected across three or more icons.</p>'
 
@@ -933,10 +947,10 @@ def build_report(path, title, summary, findings, opticals, variants, dups, clust
                          f'{html.escape(", ".join(naming["malformed"]))}</span></li>')
     for stem, group in naming["singular_plural"].items():
         name_bits.append(f'<li>Singular/plural pair: <span class="mono">'
-                         f'{html.escape(", ".join(group))}</span> — pick one convention</li>')
+                         f'{html.escape(", ".join(group))}</span>. Pick one convention</li>')
     if naming["semantic_names"]:
         name_bits.append(f'<li>Named by meaning rather than object: <span class="mono">'
-                         f'{html.escape(", ".join(naming["semantic_names"]))}</span> — these '
+                         f'{html.escape(", ".join(naming["semantic_names"]))}</span>. These '
                          f'go stale when the UI reuses them elsewhere</li>')
     naming_html = f"<ul>{''.join(name_bits)}</ul>" if name_bits else \
         '<p class="empty">Naming is consistent.</p>'
@@ -949,8 +963,8 @@ def build_report(path, title, summary, findings, opticals, variants, dups, clust
     if comp["heavy"]:
         extra.append(f'<li>Element count well above the median of {comp["median_elements"]}: '
                      f'<span class="mono">'
-                     f'{html.escape(", ".join(f"{n} ({e})" for n, e in comp["heavy"]))}</span> '
-                     f'— check these survive at render size</li>')
+                     f'{html.escape(", ".join(f"{n} ({e})" for n, e in comp["heavy"]))}</span>. '
+                     f'Check these at render size</li>')
     extra_html = f"<ul>{''.join(extra)}</ul>" if extra else \
         '<p class="empty">Coordinates and complexity are even across the set.</p>'
 
@@ -961,13 +975,13 @@ def build_report(path, title, summary, findings, opticals, variants, dups, clust
 
     doc = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{html.escape(title)} — audit</title><style>{REPORT_CSS}</style></head><body><div class="wrap">
-<h1>{html.escape(title)} — icon set audit</h1>
+<title>{html.escape(title)}. Audit</title><style>{REPORT_CSS}</style></head><body><div class="wrap">
+<h1>{html.escape(title)}. Icon set audit</h1>
 <div class="tally">{tally}</div>
 
 <h2>The set</h2>
 <p>Native size, with a coloured border on anything that has a finding. This is the view
-that decides whether the set holds together — the tables below only explain what you can
+that decides whether the set holds together. The tables below only explain what you can
 already see here.</p>
 <div class="grid">{"".join(cells)}</div>
 
@@ -1009,12 +1023,12 @@ legitimately measure small; a boxy icon well under its neighbours does not.</p>
 def main():
     ap = argparse.ArgumentParser(description="Audit an SVG icon set.")
     ap.add_argument("directory")
-    ap.add_argument("--spec", help="style-spec.json to audit against "
-                                   "(default: the majority the set converges on)")
+    ap.add_argument("--spec", help="style-spec.json to audit against. When omitted, use the "
+                                   "majority the set converges on")
     ap.add_argument("--report", help="write an annotated HTML report here")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     ap.add_argument("--fix", action="store_true",
-                    help="apply mechanical repairs in place (root attrs, id/class, rounding)")
+                    help="repair root attributes, id, class, and coordinate precision in place")
     args = ap.parse_args()
 
     files = sorted(f for f in os.listdir(args.directory) if f.endswith(".svg"))
@@ -1087,11 +1101,11 @@ def main():
                 findings[o["icon"]].append({
                     "severity": "look-at-it", "kind": "optics",
                     "message": f"fills {o['fill']:.0%} of its {o['envelope']} envelope vs "
-                               f"{median:.0%} median — reads small unless it is diagonal-dominant"})
+                               f"{median:.0%} median. Reads small unless it is diagonal-dominant"})
             elif o["fill"] > 1.06:
                 findings[o["icon"]].append({
                     "severity": "look-at-it", "kind": "optics",
-                    "message": f"overfills its {o['envelope']} envelope at {o['fill']:.0%} — "
+                    "message": f"overfills its {o['envelope']} envelope at {o['fill']:.0%}: "
                                f"reads large"})
 
     variants = attribute_variants(icons)
@@ -1119,7 +1133,7 @@ def main():
         return 1 if counts["blocking"] or broken else 0
 
     title = os.path.basename(os.path.abspath(args.directory))
-    print(f"Audit — {len(files)} icons in {args.directory}")
+    print(f"Audit: {len(files)} icons in {args.directory}")
     print(f"  spec {'from style-spec.json' if spec_path else 'inferred from the files'}: "
           f"viewBox={spec.get('viewBox')} stroke-width={spec.get('stroke-width')} "
           f"cap={spec.get('stroke-linecap')} join={spec.get('stroke-linejoin')} "
@@ -1128,13 +1142,13 @@ def main():
           f"{counts['look-at-it']} look at it · {clean} clean files\n")
 
     for f, msg in broken:
-        print(f"  {f}: unparseable XML — {msg}")
+        print(f"  {f}: unparseable XML: {msg}")
 
     if variants:
         print("Spec disagreement:")
         for key, groups in variants.items():
             for g in groups:
-                shown = ", ".join(g["icons"][:6]) + (" …" if len(g["icons"]) > 6 else "")
+                shown = ", ".join(g["icons"][:6]) + (" ..." if len(g["icons"]) > 6 else "")
                 print(f"  {key:<18} {str(g['value']):<14} {g['count']:>3} files   {shown}")
         print()
 
@@ -1157,7 +1171,7 @@ def main():
     if drifted:
         print("Recurring parts that have drifted:")
         for c in drifted:
-            print(f"  <{c['tag']}> ~{c['size'][0]}x{c['size'][1]} — {c['exact']} icons share it "
+            print(f"  <{c['tag']}> ~{c['size'][0]}x{c['size'][1]}: {c['exact']} icons share it "
                   f"exactly ({', '.join(c['members'])})")
             if c["divergent"]:
                 print(f"      near-miss: "
@@ -1170,7 +1184,7 @@ def main():
     if args.report:
         build_report(args.report, title, summary, findings, opticals, variants, dups,
                      clusters, naming, coords, comp, markup)
-        print(f"Wrote {args.report} — open it; the contact sheet is the real deliverable.")
+        print(f"Wrote {args.report}. Open it; the contact sheet is the real deliverable.")
 
     return 1 if counts["blocking"] or broken else 0
 

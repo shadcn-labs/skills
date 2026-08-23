@@ -6,7 +6,7 @@ Usage:
     python3 infer_spec.py path/to/icons/ --write        # emit style-spec.json + elements.md
     python3 infer_spec.py path/to/icons/ --write --out-dir build/ --json
 
-When you extend a set you did not author, the existing files are the specification —
+When you extend a set you did not author, the existing files are the specification,
 including their quirks. This reads them back: the grid and stroke settings the set
 converges on, how tightly it uses its canvas, which optical envelopes it favours, and
 most importantly which shapes recur across icons, with the exact markup to paste.
@@ -236,7 +236,7 @@ def path_points(d):
 
 
 def shape_points(tag, a):
-    """Outline points for a primitive shape element."""
+    """Outline points for a basic shape element."""
     f = lambda k, d=0.0: float(a.get(k, d))
     if tag == "circle":
         cx, cy, r = f("cx"), f("cy"), f("r")
@@ -304,7 +304,7 @@ def load_icon(path):
 
 
 def coarse(points, target=140):
-    """Thin a point list for pairwise distance work — full density is wasted there."""
+    """Thin a point list for pairwise distance work. Full density is wasted there."""
     n = len(points)
     if n <= target:
         return points
@@ -326,7 +326,7 @@ NEAR_PART = 0.72    # part-level IoU above which two parts are "nearly the same"
 LOOSE_PART = 0.40   # below NEAR_PART but still plausibly the same part, redrawn
 # Registry extraction is stricter than drift detection. Measured on real sets, genuine
 # reuse scores ~1.00 while shapes that merely resemble each other (a rounded rectangle
-# against a document body) top out around 0.77 — so 0.90 separates them cleanly.
+# against a document body) top out around 0.77. So 0.90 separates them cleanly.
 REGISTRY_MATCH = 0.90
 
 # The eight dihedral transforms of the square: rotations and mirrors.
@@ -386,7 +386,7 @@ def span(points):
 
 
 def comparable(pa, pb, tol=0.28, need_2d=True):
-    """Only compare parts of similar size — otherwise the overlap number is noise.
+    """Only compare parts of similar size. Otherwise the overlap number is noise.
 
     need_2d also throws out anything essentially one-dimensional. A bare line overlaps
     every other line in the set under some rotation, which is true and useless.
@@ -437,8 +437,8 @@ def cluster_parts(parts, min_members=2, threshold=REGISTRY_MATCH):
 
     A cluster is the raw material for an element registry: the shape, the icons that
     already use it, and whether they agree. Where they disagree you have to choose which
-    version to match — usually the one the majority uses, since your new icon has to sit
-    next to all of them.
+    version to match. The majority usually wins because the new icon has to sit beside
+    all existing versions.
     """
     used = [False] * len(parts)
     clusters = []
@@ -549,8 +549,8 @@ def detect_corner_radius(icons, grid):
                 continue
             for m in re.finditer(r"[Aa]\s*([-+0-9.eE]+)[,\s]+([-+0-9.eE]+)", d):
                 rx, ry = float(m.group(1)), float(m.group(2))
-                # Beyond a sixth of the grid an equal-radius arc is structure — a dome,
-                # a dial, a handle — not a rounded corner. Counting those invents a
+                # Beyond a sixth of the grid, an equal-radius arc describes structure such as
+                # a dome, dial, or handle. Counting it as a rounded corner invents a
                 # corner radius the set does not actually have.
                 if rx > 0 and abs(rx - ry) < 1e-6 and rx <= grid / 6:
                     radii.append(round(rx, 2))
@@ -611,7 +611,7 @@ def is_round(points, bb):
 
     A corner test alone is not enough: sparse cross- and arrow-shaped forms leave the
     corners empty too, and get called circles. Sampling reach in sixteen directions and
-    comparing it against the bounding ellipse separates the three cases — a clock reaches
+    comparing it against the bounding ellipse separates the three cases. A clock reaches
     the ellipse in every direction and never passes it, an arrow falls short diagonally,
     and a rectangle overshoots at the corners.
     """
@@ -683,7 +683,7 @@ def build_spec(name, grid, sw, cap, join, radius, padding, min_gap, mode, icons)
 
 
 def write_elements_md(path, title, clusters, grid):
-    lines = [f"# Elements — {title}",
+    lines = [f"# Elements: {title}",
              "",
              f"Recovered from the existing set on a {grid} grid. Paste these verbatim into "
              f"new icons and translate by whole units; redrawing them by eye is exactly how "
@@ -691,10 +691,10 @@ def write_elements_md(path, title, clusters, grid):
              ""]
     if not clusters:
         lines += ["_No shape recurs across two or more icons. Either the set is small, or "
-                  "every icon was drawn from scratch — in which case you are matching a "
+                  "every icon was drawn from scratch. You are matching a "
                   "style, not a component vocabulary._", ""]
     for i, c in enumerate(clusters, 1):
-        lines.append(f"## part-{i} — <{c['tag']}> ~{c['size'][0]}x{c['size'][1]}")
+        lines.append(f"## part-{i}: <{c['tag']}> ~{c['size'][0]}x{c['size'][1]}")
         lines.append("")
         lines.append(f"Used by {c['members']} icons: {', '.join(c['used_by'])}")
         if c["drifted"]:
@@ -705,14 +705,14 @@ def write_elements_md(path, title, clusters, grid):
         elif c["reused_rotated"]:
             lines.append("")
             lines.append(f"Reused at other orientations by "
-                         f"{', '.join(c['reused_rotated'])} — the same shape rotated or "
+                         f"{', '.join(c['reused_rotated'])}. The same shape rotated or "
                          f"mirrored, which is the system working. Rotate in whole "
                          f"quarter-turns to stay in the family.")
         elif c["notation_variants"]:
             lines.append("")
             lines.append(f"All {c['members']} are geometrically identical; "
                          f"{c['members'] - c['identical_markup']} just write the same path "
-                         f"with different notation. Cosmetic — normalise when you next "
+                         f"with different notation. Cosmetic. Normalise when you next "
                          f"touch those files.")
         lines.append("")
         lines.append("```xml")
@@ -742,7 +742,7 @@ def main():
     ap.add_argument("directory")
     ap.add_argument("--write", action="store_true",
                     help="write style-spec.json and elements.md")
-    ap.add_argument("--out-dir", help="where to write them (default: the icons directory)")
+    ap.add_argument("--out-dir", help="where to write them. Defaults to the icons directory")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     args = ap.parse_args()
 
@@ -822,7 +822,7 @@ def main():
         print()
 
         if disagreements:
-            print("The set disagrees with itself — you have to choose:")
+            print("The set disagrees with itself. You have to choose:")
             for label, d in disagreements.items():
                 alt = ", ".join(f"{o['value']!r} x{o['count']}" for o in d["others"])
                 print(f"  {label:<14} majority {d['majority']['value']!r} "
@@ -844,14 +844,14 @@ def main():
                 print(f"  part-{i}  <{c['tag']}> ~{c['size'][0]}x{c['size'][1]}  "
                       f"{c['members']} icons{note}")
                 print(f"          {', '.join(c['used_by'][:8])}"
-                      + (" …" if len(c["used_by"]) > 8 else ""))
+                      + (" ..." if len(c["used_by"]) > 8 else ""))
             print()
         else:
-            print("No shape recurs across icons — you are matching a style, not a "
+            print("No shape recurs across icons. You are matching a style, not a "
                   "component vocabulary.\n")
 
         for f, msg in broken:
-            print(f"  unparseable: {f} — {msg}")
+            print(f"  unparseable: {f}: {msg}")
 
     if args.write:
         out = args.out_dir or args.directory
@@ -864,7 +864,7 @@ def main():
         write_elements_md(ep, title, clusters, grid)
         if not args.json:
             print(f"Wrote {sp} and {ep}")
-            print("Read elements.md before drawing — it is what keeps new icons "
+            print("Read elements.md before drawing. It is what keeps new icons "
                   "indistinguishable from old ones.")
 
     return 0

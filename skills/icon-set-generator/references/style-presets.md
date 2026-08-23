@@ -1,9 +1,8 @@
 # Style presets
 
 A preset is a complete set of numbers for the `<svg>` root plus the drawing constraints that
-follow from them. Pick one at Step 3, adjust a value if the project genuinely calls for it,
-then freeze it. The point of a preset is that it removes per-icon decisions — the moment you
-start deciding stroke width per icon, the set is already drifting.
+follow from them. Pick one at Step 3, adjust a value when the project calls for it, then freeze
+the result. A preset removes per-icon decisions. Choosing stroke width per icon creates drift.
 
 Recommend one, say why in a sentence, and confirm before drawing.
 
@@ -25,12 +24,12 @@ Two things to weigh alongside taste:
   suggest Clean-on-16 instead.
 - **Match the type, not the logo.** Icons sit next to text far more often than next to the
   wordmark. A set beside a light editorial serif wants Minimal; beside a chunky grotesk it
-  wants Clean or Bold. Compare stroke weight against the body text at the same size — that's
-  the comparison the user will make unconsciously every day.
+  wants Clean or Bold. Compare stroke weight against the body text at the same size. That is
+  the comparison users see every day.
 
 ## Clean
 
-The safe default: visible without being loud, rounded without being childish.
+The safe default. It is visible without being loud and rounded without looking childish.
 
 ```json
 {
@@ -42,7 +41,7 @@ The safe default: visible without being loud, rounded without being childish.
 ```
 
 16-grid variant: `grid 16, strokeWidth 1.25, padding 1, cornerRadius 1.5, minGap 3`.
-Drawing range 2–22 on the 24 grid, 1–15 on the 16 grid.
+Drawing range 2 to 22 on the 24 grid, 1 to 15 on the 16 grid.
 
 ## Sharp
 
@@ -58,14 +57,14 @@ rectangle is a rectangle. Precise, and slightly cold on purpose.
 }
 ```
 
-Square caps extend half a stroke width beyond the coordinate — a line from `x=4` to `x=20`
-actually paints 3.25–20.75. Pull terminal coordinates in by half a stroke width so the icon
+Square caps extend half a stroke width beyond the coordinate. A line from `x=4` to `x=20`
+paints 3.25 to 20.75. Pull terminal coordinates in by half a stroke width so the icon
 still respects its padding, and remember the validator measures coordinates, not paint.
 
 ## Soft
 
-Heavier stroke, generous radius, everything rounded. Warm and legible; the least "technical"
-of the presets.
+Soft uses a heavier stroke, a generous radius, and rounded geometry. It is the least technical
+preset.
 
 ```json
 {
@@ -76,9 +75,8 @@ of the presets.
 }
 ```
 
-A 4-unit radius eats a lot of a small form. Interior details need to be simpler than in Clean —
-if an icon has more than three or four strokes across, it will clog. Raise `minGap` to 5 and
-accept that Soft sets carry less detail; that is the trade you're making for the warmth.
+A 4-unit radius consumes much of a small form. Keep interior details simpler than in Clean.
+More than four strokes across will clog. Raise `minGap` to 5 and accept less detail.
 
 ## Minimal
 
@@ -110,20 +108,19 @@ Thick strokes, high contrast, legible at a glance and on noisy backgrounds.
 }
 ```
 
-At 2.5 the stroke is a real part of the composition rather than an outline of it — interior
-space shrinks fast. Bold sets should be near-pictographic: silhouette first, detail almost
-never. This is the preset most likely to need the junction notching from
+At 2.5 the stroke is part of the composition, and interior space shrinks fast. Bold sets should
+be close to pictograms. Start with the silhouette and add little detail. This preset often
+needs the junction notching from
 `construction.md`, because thick strokes blot at every meeting point.
 
 ## Deviating from a preset
 
-Fine, as long as it's one deviation applied to the whole set and written into
-`style-spec.json`. Common, defensible ones:
+A deviation is valid when it applies to the whole set and appears in `style-spec.json`.
+Common cases follow.
 
-- **Mixed caps** — round caps with miter joins gives soft line-ends on crisp corners. A real
+- **Mixed caps.** Round caps with miter joins give soft line ends on crisp corners. This is a
   style, not a mistake.
-- **Non-standard grid** — a 20 or 32 grid for an unusual render size. Scale the envelopes from
-  `construction.md` proportionally and recompute `minGap` (it is 3/16 of the grid).
-- **Two strokes in one set** — don't. If some icons need more weight, they need to be a
-  separate filled variant, not a heavier outline. Two outline weights in one set reads as an
-  error every time.
+- **Non-standard grid.** A 20 or 32 grid can fit an unusual render size. Scale the envelopes
+  from `construction.md` and set `minGap` to three sixteenths of the grid.
+- **One outline weight.** Put extra emphasis in a separate filled variant. Two outline weights
+  in one set read as an error.

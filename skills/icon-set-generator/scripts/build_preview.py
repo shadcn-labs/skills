@@ -136,8 +136,8 @@ def cells(icons, klass):
 def main():
     ap = argparse.ArgumentParser(description="Build a preview page for an SVG icon set.")
     ap.add_argument("directory")
-    ap.add_argument("--out", help="output HTML path (default: <directory>/preview.html)")
-    ap.add_argument("--title", help="page heading (default: from style-spec.json, or the dir name)")
+    ap.add_argument("--out", help="output HTML path. Defaults to <directory>/preview.html")
+    ap.add_argument("--title", help="page heading. Defaults to style-spec.json or the directory name")
     args = ap.parse_args()
 
     files = sorted(f for f in os.listdir(args.directory) if f.endswith(".svg"))
@@ -193,26 +193,26 @@ def main():
   <button id="squint" aria-pressed="false">Squint</button>
   <button id="labels" aria-pressed="true">Labels</button>
   <span style="color:var(--muted);font-size:12px">
-    Squint blurs the set — even grey means balanced weight; bright or dark spots are outliers.
+    Squint blurs the set. Even grey means balanced weight; bright or dark spots are outliers.
   </span>
 </div>
 
-<h2>Native size &mdash; 24px</h2>
+<h2>Native size, 24px</h2>
 <p>The size the set actually renders at, and therefore the only view that decides whether
 it works. Anything that turns into a smudge here is too detailed.</p>
 <div class="grid">{cells(icons, "s24")}</div>
 
 <h2>Size ladder</h2>
-<p>The first eight icons across the range. Detail that survives 24px often dies at 14px —
-if it does, either simplify or draw a separate 16-grid set.</p>
+<p>The first eight icons across the range. Detail that survives 24px often dies at 14px.
+If it does, either simplify or draw a separate 16-grid set.</p>
 <div class="ladder">{ladder}</div>
 
 <h2>Beside text</h2>
 <p>The comparison users make unconsciously all day. The stroke should sit at the same
-visual weight as the type next to it &mdash; not lighter, not pushier.</p>
+visual weight as the type next to it.</p>
 <div class="inline">{inline_rows}</div>
 
-<h2>Construction &mdash; 48px</h2>
+<h2>Construction, 48px</h2>
 <p>Twice size, for checking joins, corner radii, and whether recurring parts really are
 identical between icons.</p>
 <div class="grid checker">{cells(icons, "s48")}</div>

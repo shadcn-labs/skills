@@ -4,25 +4,25 @@
     {
       "id": 1,
       "prompt": "Our icon set has grown to about 40 SVGs over two years and three different designers, and honestly it looks a bit amateur now but I can't put my finger on why. They're in src/assets/icons/. Can you take a look and tell me what to fix? They render at 20px in the app sidebar.",
-      "expected_output": "An audit that runs the analyzer, opens the contact sheet, and returns a prioritized triage report distinguishing what breaks at 20px from what is systemic from what is cosmetic — not a dump of every script finding.",
-      "files": [],
+      "expected_output": "An audit that runs the analyzer, opens the contact sheet, and returns a prioritized triage report. It separates failures visible at 20px, systemic defects, and cosmetic findings.",
+      "files": ["evals/files/grown-set"],
       "expectations": [
         "Runs scripts/audit_icons.py against the directory and generates the HTML report",
-        "Asks whether there is an intended spec or whether the set's own majority is the standard",
+        "Inspects for an intended spec and, when none exists, states whether the set majority is being used as an assumption",
         "Uses the stated 20px render size to weight density and gap findings rather than treating all findings equally",
-        "Reports divergent recurring parts (the same shape drawn several ways) as a systemic finding, not as separate per-file issues",
+        "Reports a shared shape drawn several ways as one systemic recurring-parts finding",
         "Groups findings into breaks-at-render-size / systemic / worth-fixing-when-touched rather than listing them flat",
         "Includes a verdict paragraph naming the single thing to fix first",
-        "Identifies at least one issue the script cannot detect (concept collision, mixed perspective, mixed detail level, or a coverage gap)",
+        "Identifies at least one issue the script cannot detect, such as a concept collision, mixed perspective, mixed detail level, or coverage gap",
         "States explicitly what it saw and chose not to flag",
-        "Does not redraw any icon"
+        "Limits changes to approved mechanical repairs and leaves redraw work in the report"
       ]
     },
     {
       "id": 2,
       "prompt": "before we ship the design system i want the icon library QA'd. there's a style-spec.json in there that says what they're supposed to be. some of them definitely don't follow it. fix whatever's mechanically fixable and tell me what needs a human.",
       "expected_output": "An audit run with --spec so deviations are real errors, a clear split between what --fix repaired and what needs redrawing, and a re-run afterwards showing the true remaining list.",
-      "files": [],
+      "files": ["evals/files/spec-set"],
       "expectations": [
         "Passes the existing style-spec.json via --spec rather than letting the script infer a majority",
         "Runs the audit before applying any fixes and reports what it found",
@@ -30,20 +30,20 @@
         "Re-runs the audit after fixing so the remaining findings are accurate",
         "Explains that hardcoded colours and filenames are deliberately not auto-fixed, and why",
         "Clearly separates what was repaired automatically from what needs a redraw",
-        "Does not claim perceptual problems (optical size, merged shapes) were fixed by --fix"
+        "Leaves optical size and merged-shape findings in the human redraw list after --fix"
       ]
     },
     {
       "id": 3,
-      "prompt": "Two of my icons look identical to me but they have different names and I'm not sure if that's a problem. Also the whole set generally feels fine — is there actually anything wrong with it or am I imagining things?",
+      "prompt": "Two of my icons look identical to me but they have different names and I'm not sure if that's a problem. Also the whole set generally feels fine. Is there actually anything wrong with it or am I imagining things?",
       "expected_output": "A short, honest audit. If the set is largely healthy, the report says so rather than manufacturing findings, and the duplicate question is answered concretely.",
-      "files": [],
+      "files": ["evals/files/healthy-duplicates"],
       "expectations": [
         "Runs the analyzer and answers the duplicate question with the measured geometric similarity",
         "Keeps the report short when the set is largely healthy rather than padding it with trivia",
         "Explicitly says which findings are invisible at render size instead of inflating their severity",
         "Notes that near-duplicate icons are a maintenance problem rather than a visual one",
-        "Does not recommend a large redraw for a set that measures clean",
+        "Keeps recommendations proportional when the set measures clean",
         "If the set has no style-spec.json, offers to write one from the inferred majority"
       ]
     }
