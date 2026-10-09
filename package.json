@@ -1,0 +1,10 @@
+{
+  "name": "@shadcn-labs/skills",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "validate": "echo \"TODO: skill validation\" && exit 0"
+  },
+  "packageManager": "npm@10.9.4"
+}
